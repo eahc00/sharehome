@@ -42,6 +42,12 @@ public record SignupRequest(
         validateBirth(birth);
     }
 
+    public MemberCommand toCommand() {
+        return new MemberCommand(
+                email, name, birth, password
+        );
+    }
+
     private static void validateBirth(LocalDate birth) {
         int americanAge = LocalDate.now().minusYears(birth.getYear()).getYear();
 
