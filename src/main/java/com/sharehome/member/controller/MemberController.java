@@ -1,8 +1,8 @@
 package com.sharehome.member.controller;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
 
-import com.sharehome.member.controller.dto.SignupRequest;
+import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
