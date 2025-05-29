@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(MemberController.class)
 @DisplayName("MemberController 은(는)")
 @DisplayNameGeneration(ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 class MemberControllerTest {
 
     @Autowired
@@ -34,7 +35,6 @@ class MemberControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
 
     @Nested
     class 회원가입_시 {
@@ -77,7 +77,6 @@ class MemberControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isCreated());
-
             }
 
             @ParameterizedTest
@@ -184,10 +183,8 @@ class MemberControllerTest {
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isBadRequest());
-
             }
         }
-
 
         @Nested
         class 이메일은 {
@@ -450,7 +447,6 @@ class MemberControllerTest {
                                .contentType(APPLICATION_JSON)
                                .content(content))
                        .andExpect(status().isCreated());
-
             }
 
             @ParameterizedTest

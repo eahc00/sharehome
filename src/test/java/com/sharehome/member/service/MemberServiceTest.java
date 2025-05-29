@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @DisplayName("MemberService 은(는)")
-@SuppressWarnings("NonAsciiChracters")
+@SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class MemberServiceTest {
 
