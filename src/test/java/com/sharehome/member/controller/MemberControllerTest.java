@@ -51,8 +51,8 @@ class MemberControllerTest {
 
             // when&then
             mockMvc.perform(post("/members")
-                    .contentType(APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
         }
 
@@ -74,8 +74,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isCreated());
             }
 
@@ -95,8 +95,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isBadRequest());
             }
 
@@ -115,8 +115,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isCreated());
             }
 
@@ -135,8 +135,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isBadRequest());
             }
 
@@ -155,8 +155,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isBadRequest());
             }
 
@@ -204,8 +204,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isCreated());
             }
 
@@ -244,8 +244,8 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isCreated());
             }
 
@@ -377,7 +377,7 @@ class MemberControllerTest {
             @ValueSource(strings = {
                     "chxrry🍒@naver.com",
                     "a-bc!@gmail.com",
-                     "채리@naver.com",
+                    "채리@naver.com",
             })
             void 영어_숫자_마침표_외_문자가_들어오면_예외(String email) throws Exception {
                 // given
@@ -428,7 +428,7 @@ class MemberControllerTest {
              */
             @ParameterizedTest
             @ValueSource(strings = {
-              "20021009", "20000907", "19991111"
+                    "20021009", "20000907", "19991111"
             })
             void yyyyMMdd_형식으로_입력받는다(String date) throws Exception {
                 // given
@@ -444,9 +444,9 @@ class MemberControllerTest {
 
                 // when&then
                 mockMvc.perform(post("/members")
-                               .contentType(APPLICATION_JSON)
-                               .content(content))
-                       .andExpect(status().isCreated());
+                                .contentType(APPLICATION_JSON)
+                                .content(content))
+                        .andExpect(status().isCreated());
             }
 
             @ParameterizedTest
@@ -519,16 +519,14 @@ class MemberControllerTest {
         class 비밀번호는 {
 
             /**
-             * 비밀번호는 8글자 이상, 50글자 이내여야 한다.
-             * 비밀번호는 영어, 숫자, 특수문자(!@#,.<>?)만 입력 가능하다.
-             * 비밀번호는 최소 한 개 이상의 숫자, 소문자, 대문자, 특수문자를 포함해야 한다.
-             * 비밀번호는 공백이 들어올 수 없다.
+             * 비밀번호는 8글자 이상, 50글자 이내여야 한다. 비밀번호는 영어, 숫자, 특수문자(!@#,.<>?)만 입력 가능하다. 비밀번호는 최소 한 개 이상의 숫자, 소문자, 대문자, 특수문자를
+             * 포함해야 한다. 비밀번호는 공백이 들어올 수 없다.
              */
             @ParameterizedTest
             @ValueSource(ints = {8, 10, 25, 30, 50})
             void 여덟_글자_이상_50글자_이내여야_한다(int length) throws Exception {
                 // given
-                String password = "a".repeat(length-4) + "Aa1#";
+                String password = "a".repeat(length - 4) + "Aa1#";
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -546,7 +544,7 @@ class MemberControllerTest {
             @ValueSource(ints = {4, 7, 51, 70, 100})
             void 여덟_글자_이상_50글자_이내가_아니면_예외(int length) throws Exception {
                 // given
-                String password = "a".repeat(length-4) + "Aa1#";
+                String password = "a".repeat(length - 4) + "Aa1#";
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
