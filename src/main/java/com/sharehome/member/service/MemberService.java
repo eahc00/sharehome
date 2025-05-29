@@ -4,7 +4,6 @@ import com.sharehome.common.exception.ConflictException;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.member.service.command.MemberCommand;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

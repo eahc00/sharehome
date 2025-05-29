@@ -69,7 +69,6 @@ class MemberServiceTest {
 
             // then
             assertThat(memberId).isNotNull();
-
         }
     }
 }

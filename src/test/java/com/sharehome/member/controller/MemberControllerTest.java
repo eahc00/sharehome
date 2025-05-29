@@ -49,7 +49,7 @@ class MemberControllerTest {
                     "Abc123##"
             );
 
-            //when&then
+            // when&then
             mockMvc.perform(post("/members")
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
@@ -62,7 +62,7 @@ class MemberControllerTest {
             @ParameterizedTest
             @ValueSource(ints = {2, 4, 9, 10, 11, 20})
             void 두글자_이상_20글자_이내여야_한다(int length) throws Exception {
-                //given
+                // given
                 String username = "a".repeat(length);
 
                 SignupRequest request = new SignupRequest(
@@ -72,7 +72,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -84,7 +84,7 @@ class MemberControllerTest {
                     0, 1, 23, 50, 100
             })
             void 두글자_이상_20글자_이내가_아니면_예외(int length) throws Exception {
-                //given
+                // given
                 String username = "a".repeat(length);
                 SignupRequest request = new SignupRequest(
                         "eahc00@naver.com",
@@ -93,7 +93,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -105,7 +105,7 @@ class MemberControllerTest {
                     "하영채", "YoungchaiHa", "chxxry", "홍길동"
             })
             void 영어와_한국어만_입력_가능하다(String username) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "eahc00@naver.com",
                         username,
@@ -113,7 +113,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -125,7 +125,7 @@ class MemberControllerTest {
                     "영채Ha", "채리chxxry", "Ha영채"
             })
             void 영어와_한국어를_섞어_쓰면_예외(String username) throws Exception {
-                 //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "eahc00@naver.com",
                         username,
@@ -133,7 +133,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -145,7 +145,7 @@ class MemberControllerTest {
                     "채리🍒", "영채1009", "123", "chxxry!@"
             })
             void 영어_한국어_외_다른_문자가_들어오면_예외(String username) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "eahc00@naver.com",
                         username,
@@ -153,7 +153,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -170,7 +170,7 @@ class MemberControllerTest {
                     " abc"
             })
             void 공백이_들어오면_예외(String username) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "eahc00@naver.com",
                         username,
@@ -178,7 +178,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -194,7 +194,7 @@ class MemberControllerTest {
                     "chxxry@naver.com", "ycha1009@gmail.com", "c123@o.cnu.ac.kr"
             })
             void 정확히_하나의_at_기호가_포함되어야_한다(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -202,7 +202,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -214,7 +214,7 @@ class MemberControllerTest {
                     "cr@@123.com", "chxxrynaver.com", "a@b@abc.com"
             })
             void at_기호가_하나가_아니면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -222,7 +222,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -234,7 +234,7 @@ class MemberControllerTest {
                     "chxxry@naver.com", "ycha1009@gmail.com", "c123@o.cnu.ac.kr"
             })
             void at_기호로_분리되는_두_개의_텍스트열이_있어야_한다(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -242,7 +242,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -254,7 +254,7 @@ class MemberControllerTest {
                     "@naver.com", "ycha1009@", "@"
             })
             void at_기호로_분리되는_두_개의_텍스트열이_없으면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -262,7 +262,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -274,7 +274,7 @@ class MemberControllerTest {
                     "chxxry@naver.com", "ycha1009@gmail.com", "c123@o.cnu.ac.kr"
             })
             void 도메인_이름에는_마침표가_최소_하나_포함되어야_한다(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -282,7 +282,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -294,7 +294,7 @@ class MemberControllerTest {
                     "abc@abc", "abc@chxxry", "abc@domain123"
             })
             void 도메인_이름에_마침표가_없으면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -302,7 +302,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -314,7 +314,7 @@ class MemberControllerTest {
                     "chxxry@naver.com", "ycha1009@gmail.com", "c123@o.cnu.ac.kr"
             })
             void 도메인_이름에는_마침표로_분리되는_두_개의_텍스트열이_있어야_한다(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -322,7 +322,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -334,7 +334,7 @@ class MemberControllerTest {
                     "chxxry@naver.", "ycha1009@.com", "c123@."
             })
             void 도메인_이름에는_마침표로_분리되는_두_개의_텍스트열이_없으면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -342,7 +342,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -358,7 +358,7 @@ class MemberControllerTest {
                     "Youngchai.ha@naver.com"
             })
             void 사용자_이름에는_영어_숫자_마침표만_입력_가능하다(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -366,7 +366,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -377,10 +377,10 @@ class MemberControllerTest {
             @ValueSource(strings = {
                     "chxrry🍒@naver.com",
                     "a-bc!@gmail.com",
-                    "채리@naver.com",
+                     "채리@naver.com",
             })
             void 영어_숫자_마침표_외_문자가_들어오면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -388,7 +388,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -403,7 +403,7 @@ class MemberControllerTest {
                     "cx@ naver.com"
             })
             void 공백이_들어오면_예외(String email) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         email,
                         "하채리",
@@ -411,7 +411,7 @@ class MemberControllerTest {
                         "Abc123##"
                 );
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -431,7 +431,7 @@ class MemberControllerTest {
               "20021009", "20000907", "19991111"
             })
             void yyyyMMdd_형식으로_입력받는다(String date) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -442,7 +442,7 @@ class MemberControllerTest {
                 String content = objectMapper.writeValueAsString(request)
                         .replace("00010101", date);
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                .contentType(APPLICATION_JSON)
                                .content(content))
@@ -454,7 +454,7 @@ class MemberControllerTest {
                     "2002-10-09", "2000.09.07", "021009", "2002/10/9"
             })
             void yyyyMMdd_형식이_아니면_예외(String date) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -465,7 +465,7 @@ class MemberControllerTest {
                 String content = objectMapper.writeValueAsString(request)
                         .replace("00010101", date);
 
-                //when&then
+                // when&then
                 mockMvc.perform(post("/members")
                                 .contentType(APPLICATION_JSON)
                                 .content(content))
@@ -477,7 +477,7 @@ class MemberControllerTest {
                     "20021009", "20000907", "19991111"
             })
             void 만_18세_이상이면_성공(String date) throws Exception {
-                //given
+                // given
                 LocalDate birth = LocalDate.parse(date, BASIC_ISO_DATE);
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
@@ -497,7 +497,7 @@ class MemberControllerTest {
                     "20231009", "20220907", "20081111"
             })
             void 만_18세_미만이면_예외(String date) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -527,7 +527,7 @@ class MemberControllerTest {
             @ParameterizedTest
             @ValueSource(ints = {8, 10, 25, 30, 50})
             void 여덟_글자_이상_50글자_이내여야_한다(int length) throws Exception {
-                //given
+                // given
                 String password = "a".repeat(length-4) + "Aa1#";
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
@@ -545,7 +545,7 @@ class MemberControllerTest {
             @ParameterizedTest
             @ValueSource(ints = {4, 7, 51, 70, 100})
             void 여덟_글자_이상_50글자_이내가_아니면_예외(int length) throws Exception {
-                //given
+                // given
                 String password = "a".repeat(length-4) + "Aa1#";
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
@@ -565,7 +565,7 @@ class MemberControllerTest {
                     "Aabc123@", "123Abc!?", "#123Abcd", "qwer<123A"
             })
             void 영어_숫자_특수문자만_입력_가능하다(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -584,7 +584,7 @@ class MemberControllerTest {
                     "Abc123$^", "채리채리1#Aa", "Chxxry123🍒"
             })
             void 영어_숫자_특수문자_외_다른_문자가_들어오면_예외(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -603,7 +603,7 @@ class MemberControllerTest {
                     "Aabc123@", "123Abc!?", "#123Abcd", "qwer<123A"
             })
             void 최소_하나의_숫자_대문자_소문자_특수문자를_포함해야_한다(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -622,7 +622,7 @@ class MemberControllerTest {
                     "abc123@", "123ABC!?", "#AbcdEfg", "qwer123A"
             })
             void 최소_하나의_숫자_대문자_소문자_특수문자를_포함하지_않으면_예외(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -641,7 +641,7 @@ class MemberControllerTest {
                     "Aabc123@", "123Abc!?", "#123Abcd", "qwer<123A"
             })
             void 공백이_들어올_수_없다(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
@@ -660,7 +660,7 @@ class MemberControllerTest {
                     "Aabc 123@", "123Abc!?\n", " #123Abc", "qwer<12  "
             })
             void 공백이_들어오면_예외(String password) throws Exception {
-                //given
+                // given
                 SignupRequest request = new SignupRequest(
                         "chxxry@naver.com",
                         "하채리",
