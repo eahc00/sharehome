@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.ConflictException;
 import com.sharehome.member.domain.MemberRepository;
+import com.sharehome.member.service.command.MemberCommand;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @DisplayName("MemberService 은(는)")
-@SuppressWarnings("NonAsciiChracters")
+@SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class MemberServiceTest {
 
@@ -37,11 +38,21 @@ class MemberServiceTest {
         @Test
         void 이메일이_중복되면_예외() {
             // given
-            memberService.join("a", "a", LocalDate.of(2002, 10, 9), "a");
+            memberService.join(new MemberCommand(
+                    "chxxry00@naver.com",
+                    "하채리",
+                    LocalDate.of(2002, 10, 9),
+                    "Abc123@!"
+            ));
 
             // when & then
             assertThatThrownBy(() ->
-                    memberService.join("a", "a", LocalDate.of(2002, 10, 9), "a")
+                    memberService.join(new MemberCommand(
+                            "chxxry00@naver.com",
+                            "하채리",
+                            LocalDate.of(2002, 10, 9),
+                            "Abc123@!"
+                    ))
             ).isInstanceOf(ConflictException.class)
                     .hasMessage("해당 이메일로 이미 가입한 회원이 있습니다");
         }
@@ -49,11 +60,15 @@ class MemberServiceTest {
         @Test
         void 중복되는_이메일이_없으면_회원가입에_성공한다() {
             // when
-            Long memberId = memberService.join("a", "a", LocalDate.of(2002, 10, 9), "a");
+            Long memberId = memberService.join(new MemberCommand(
+                    "chxxry00@naver.com",
+                    "하채리",
+                    LocalDate.of(2002, 10, 9),
+                    "Abc123@!"
+            ));
 
             // then
             assertThat(memberId).isNotNull();
-
         }
     }
 }

@@ -1,9 +1,10 @@
 package com.sharehome.member.controller;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
 
-import com.sharehome.member.controller.dto.SignupRequest;
+import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.service.MemberService;
+import com.sharehome.member.service.command.MemberCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +25,7 @@ public class MemberController {
     public void signup(
             @RequestBody @Valid SignupRequest request
     ) {
-        memberService.join(
-                request.getEmail(),
-                request.getName(),
-                request.getBirth(),
-                request.getPassword()
-        );
+        MemberCommand command = request.toCommand();
+        memberService.join(command);
     }
 }
