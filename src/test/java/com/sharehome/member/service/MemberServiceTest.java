@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.ConflictException;
+import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.member.service.command.MemberCommand;
 import java.time.LocalDate;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -69,6 +71,46 @@ class MemberServiceTest {
 
             // then
             assertThat(memberId).isNotNull();
+        }
+    }
+
+    @Nested
+    class 로그인_시 {
+
+        private final MemberCommand command = new MemberCommand(
+                "email123@domain.com",
+                "하영채",
+                LocalDate.of(2002, 10, 9),
+                "Password1234@"
+        );
+
+        @BeforeEach
+        void setUp() {
+            memberService.join(command);
+        }
+
+        @Test
+        void 로그인_성공() {
+            // when&then
+            Assertions.assertDoesNotThrow(() -> {
+                memberService.login(command.email(), command.password());
+            });
+        }
+
+        @Test
+        void 이메일이_없으면_예외() {
+            // when&then
+            assertThatThrownBy(() ->
+                    memberService.login("invalid@domain.com", command.password())
+            ).isInstanceOf(UnauthorizedException.class);
+        }
+
+        @Test
+        void 비밀번호가_틀리면_예외() {
+            // when&then
+            assertThatThrownBy(() ->
+                    memberService.login(command.email(), "Invalid1234@")
+            ).isInstanceOf(UnauthorizedException.class);
         }
     }
 }
