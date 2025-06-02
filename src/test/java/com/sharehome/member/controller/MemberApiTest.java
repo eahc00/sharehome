@@ -2,7 +2,12 @@ package com.sharehome.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.domain.MemberRepository;
 import io.restassured.RestAssured;
@@ -15,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -28,7 +32,7 @@ public class MemberApiTest {
     MemberRepository memberRepository;
 
     @BeforeEach
-    protected void setup() {
+    protected void setUp() {
         RestAssured.port = port;
         memberRepository.deleteAll();
     }
@@ -36,54 +40,102 @@ public class MemberApiTest {
     @Test
     void 회원가입_성공() {
         // given
-        SignupRequest request = new SignupRequest(
-                "eahc00@naver.com",
-                "영채",
-                LocalDate.of(2002, 10, 9),
-                "Abc123##"
-        );
+        SignupRequest request = createSignupRequest();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/members")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = joinMemberRequest(request);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
     }
 
     @Test
     void 중복된_이메일로_회원가입_시_실패() {
         // given
-        SignupRequest request = new SignupRequest(
-                "eahc00@naver.com",
-                "영채",
-                LocalDate.of(2002, 10, 9),
-                "Abc123##"
-        );
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/members")
-                .then()
-                .log().all()
-                .extract();
+        SignupRequest request = createSignupRequest();
+        joinMemberRequest(request);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given()
+        ExtractableResponse<Response> response = joinMemberRequest(request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(CONFLICT.value());
+    }
+
+    @Test
+    void 로그인_성공() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+
+        LoginRequest request = new LoginRequest(signupRequest.email(), signupRequest.password());
+
+        // when
+        ExtractableResponse<Response> response = loginMemberRequest(request);
+
+        // then
+        assertThat(response.cookie("JSESSIONID")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    @Test
+    void 이메일이_없으면_로그인_실패() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+
+        LoginRequest request = new LoginRequest("invalid@domain.com", signupRequest.password());
+
+        // when
+        ExtractableResponse<Response> response = loginMemberRequest(request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
+        assertThat(response.cookie("JSESSIONID")).isNull();
+    }
+
+    @Test
+    void 비밀번호가_틀리면_로그인_실패() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+
+        LoginRequest request = new LoginRequest(signupRequest.email(), "Invalid1234@");
+
+        // when
+        ExtractableResponse<Response> response = loginMemberRequest(request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
+        assertThat(response.cookie("JSESSIONID")).isNull();
+    }
+
+    private static SignupRequest createSignupRequest() {
+        return new SignupRequest(
+                "email@domain.com",
+                "하영채",
+                LocalDate.of(2002, 10, 9),
+                "Password1234@"
+        );
+    }
+
+    private static ExtractableResponse<Response> joinMemberRequest(SignupRequest request) {
+        return RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/members")
                 .then()
                 .log().all()
                 .extract();
+    }
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    private static ExtractableResponse<Response> loginMemberRequest(LoginRequest request) {
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/members/login")
+                .then()
+                .log().all()
+                .extract();
     }
 }

@@ -3,6 +3,7 @@ package com.sharehome.member.domain;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.sharehome.common.exception.UnauthorizedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,5 +38,11 @@ public class Member {
         this.name = name;
         this.birth = birth;
         this.password = password;
+    }
+
+    public void login(String password) {
+        if (!this.password.equals(password)) {
+            throw new UnauthorizedException("이메일 혹은 비밀번호가 잘못되어 로그인에 실패하였습니다");
+        }
     }
 }
