@@ -5,6 +5,7 @@ import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
+import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.member.service.command.UpdateMemberCommand;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,12 @@ public class MemberService {
         Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
                 new NotFoundException("해당 id를 가진 회원이 없습니다."));
         member.update(command.nickname(), command.address());
+    }
+
+    @Transactional
+    public void changePassword(ChangePasswordCommand command) {
+        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
+                new NotFoundException("해당 id를 가진 회원이 없습니다."));
+        member.changePassword(command.oldPassword(), command.newPassword());
     }
 }

@@ -56,4 +56,15 @@ public class Member {
         this.nickname = nickname;
         this.address = address;
     }
+
+    public void changePassword(String oldPassword, String newPassword) {
+        checkPassword(oldPassword);
+        this.password = newPassword;
+    }
+
+    public void checkPassword(String password) {
+        if (!password.equals(this.password)) {
+            throw new UnauthorizedException("비밀번호가 틀립니다");
+        }
+    }
 }

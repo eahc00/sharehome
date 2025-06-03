@@ -3,10 +3,12 @@ package com.sharehome.member.controller;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import com.sharehome.common.auth.Auth;
+import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.controller.request.UpdateMemberRequest;
 import com.sharehome.member.service.MemberService;
+import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.member.service.command.UpdateMemberCommand;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,5 +58,14 @@ public class MemberController {
     ) {
         UpdateMemberCommand command = request.toCommand(memberId);
         memberService.updateMember(command);
+    }
+
+    @PostMapping("/change_password")
+    public void changePassword(
+            @Auth Long memberId,
+            @RequestBody @Valid ChangePasswordRequest request
+    ) {
+        ChangePasswordCommand command = request.toCommand(memberId);
+        memberService.changePassword(command);
     }
 }

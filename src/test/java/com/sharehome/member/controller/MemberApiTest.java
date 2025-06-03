@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.controller.request.UpdateMemberRequest;
@@ -150,6 +151,60 @@ public class MemberApiTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().put("/members/my")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 비밀번호_변경_성공() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+        LoginRequest loginRequest = createLoginRequest(signupRequest.email(), signupRequest.password());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(loginRequest);
+        String sessionId = loginResponse.cookie("JSESSIONID");
+
+        ChangePasswordRequest request = new ChangePasswordRequest(
+                signupRequest.password(), "newPassword1234@"
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .cookie("JSESSIONID", sessionId)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/members/change_password")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    @Test
+    void 비밀번호_변경_실패() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+        LoginRequest loginRequest = createLoginRequest(signupRequest.email(), signupRequest.password());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(loginRequest);
+        String sessionId = loginResponse.cookie("JSESSIONID");
+
+        ChangePasswordRequest request = new ChangePasswordRequest(
+                "WrongPassword1234@", "newPassword1234@"
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .cookie("JSESSIONID", sessionId)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/members/change_password")
                 .then()
                 .log().all()
                 .extract();

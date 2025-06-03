@@ -9,6 +9,7 @@ import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
+import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.member.service.command.UpdateMemberCommand;
 import java.time.LocalDate;
@@ -142,6 +143,7 @@ class MemberServiceTest {
                     "채리채리",
                     new Address("대전", "대학로", "12345")
             );
+
             // when
             memberService.updateMember(command);
 
@@ -159,10 +161,62 @@ class MemberServiceTest {
                     "채리채리",
                     new Address("대전", "대학로", "12345")
             );
-            
+
             // when&then
             assertThatThrownBy(() ->
                     memberService.updateMember(command)
+            ).isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class 비밀번호_변경_시 {
+
+        private Long memberId;
+        private String oldPassword;
+
+        @BeforeEach
+        void setUp() {
+            SignupCommand signupCommand = new SignupCommand(
+                    "email123@domain.com",
+                    "하영채",
+                    LocalDate.of(2002, 10, 9),
+                    "Password1234@"
+            );
+            memberId = memberService.join(signupCommand);
+            oldPassword = signupCommand.password();
+        }
+
+        @Test
+        void 해당_id를_가진_회원의_비밀번호를_변경할_수_있다() {
+            // given
+            String newPassword = "newPassword1234@";
+            ChangePasswordCommand command = new ChangePasswordCommand(
+                    memberId,
+                    oldPassword,
+                    newPassword
+            );
+
+            // when
+            memberService.changePassword(command);
+
+            // then
+            Member member = memberRepository.findById(memberId).get();
+            assertThat(member.getPassword()).isEqualTo(newPassword);
+        }
+
+        @Test
+        void 해당_id를_가진_회원이_없으면_예외() {
+            // given
+            ChangePasswordCommand command = new ChangePasswordCommand(
+                    100L,
+                    oldPassword,
+                    "newPassword1234@"
+            );
+
+            // when&then
+            assertThatThrownBy(() ->
+                    memberService.changePassword(command)
             ).isInstanceOf(NotFoundException.class);
         }
     }
