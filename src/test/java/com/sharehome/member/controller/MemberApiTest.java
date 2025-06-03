@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
+import com.sharehome.member.controller.request.UpdateMemberRequest;
 import com.sharehome.member.domain.MemberRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -68,7 +69,7 @@ public class MemberApiTest {
         SignupRequest signupRequest = createSignupRequest();
         joinMemberRequest(signupRequest);
 
-        LoginRequest request = new LoginRequest(signupRequest.email(), signupRequest.password());
+        LoginRequest request = createLoginRequest(signupRequest.email(), signupRequest.password());
 
         // when
         ExtractableResponse<Response> response = loginMemberRequest(request);
@@ -84,7 +85,7 @@ public class MemberApiTest {
         SignupRequest signupRequest = createSignupRequest();
         joinMemberRequest(signupRequest);
 
-        LoginRequest request = new LoginRequest("invalid@domain.com", signupRequest.password());
+        LoginRequest request = createLoginRequest("invalid@domain.com", signupRequest.password());
 
         // when
         ExtractableResponse<Response> response = loginMemberRequest(request);
@@ -100,7 +101,7 @@ public class MemberApiTest {
         SignupRequest signupRequest = createSignupRequest();
         joinMemberRequest(signupRequest);
 
-        LoginRequest request = new LoginRequest(signupRequest.email(), "Invalid1234@");
+        LoginRequest request = createLoginRequest(signupRequest.email(), "Invalid1234@");
 
         // when
         ExtractableResponse<Response> response = loginMemberRequest(request);
@@ -110,6 +111,53 @@ public class MemberApiTest {
         assertThat(response.cookie("JSESSIONID")).isNull();
     }
 
+    @Test
+    void 로그인_이후에만_계정관리를_할_수_있다() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+        LoginRequest loginRequest = createLoginRequest(signupRequest.email(), signupRequest.password());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(loginRequest);
+        String sessionId = loginResponse.cookie("JSESSIONID");
+
+        UpdateMemberRequest request = createUpdateMemberRequest();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .cookie("JSESSIONID", sessionId)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().put("/members/my")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    @Test
+    void 로그인_하지_않고_계정관리_시_예외() {
+        // given
+        SignupRequest signupRequest = createSignupRequest();
+        joinMemberRequest(signupRequest);
+
+        UpdateMemberRequest request = createUpdateMemberRequest();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .cookie("JSESSIONID", null)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().put("/members/my")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
+    }
+
     private static SignupRequest createSignupRequest() {
         return new SignupRequest(
                 "email@domain.com",
@@ -117,6 +165,14 @@ public class MemberApiTest {
                 LocalDate.of(2002, 10, 9),
                 "Password1234@"
         );
+    }
+
+    private static LoginRequest createLoginRequest(String email, String password) {
+        return new LoginRequest(email, password);
+    }
+
+    private static UpdateMemberRequest createUpdateMemberRequest() {
+        return new UpdateMemberRequest("채리채리", "대전", "대학로", "12345");
     }
 
     private static ExtractableResponse<Response> joinMemberRequest(SignupRequest request) {
