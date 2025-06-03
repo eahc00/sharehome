@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.sharehome.common.exception.UnauthorizedException;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -32,6 +33,11 @@ public class Member {
 
     @Column(nullable = false)
     private String password;
+
+    private String nickname;
+
+    @Embedded
+    private Address address;
 
     public Member(String email, String name, LocalDate birth, String password) {
         this.email = email;
