@@ -2,7 +2,7 @@ package com.sharehome.member.service.command;
 
 import java.time.LocalDate;
 
-public record MemberCommand(
+public record SignupCommand(
         String email,
         String name,
         LocalDate birth,

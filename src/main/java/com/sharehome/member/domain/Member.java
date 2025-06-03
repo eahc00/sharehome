@@ -51,4 +51,9 @@ public class Member {
             throw new UnauthorizedException("이메일 혹은 비밀번호가 잘못되어 로그인에 실패하였습니다");
         }
     }
+
+    public void update(String nickname, Address address) {
+        this.nickname = nickname;
+        this.address = address;
+    }
 }
