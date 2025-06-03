@@ -16,8 +16,7 @@ public record SignupRequest(
                 message = "이메일 형식이 올바르지 않습니다."
         )
         @NotNull(message = "이메일은 필수로 입력해야 합니다.")
-        String email
-        ,
+        String email,
         @Pattern(
                 regexp = "^(?:[가-힣]{2,20}|[a-zA-Z]{2,20})$",
                 message = "이름 형식이 올바르지 않습니다."

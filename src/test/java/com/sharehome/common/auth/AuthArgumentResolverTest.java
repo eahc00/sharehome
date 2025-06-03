@@ -70,7 +70,6 @@ class AuthArgumentResolverTest {
         assertThat(memberId).isEqualTo(1L);
     }
 
-
     @Test
     void 세션_졍보가_없으면_예외() throws Exception {
         // given
