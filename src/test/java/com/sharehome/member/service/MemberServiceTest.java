@@ -4,9 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.ConflictException;
+import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
+import com.sharehome.member.domain.Address;
+import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
-import com.sharehome.member.service.command.MemberCommand;
+import com.sharehome.member.service.command.ChangePasswordCommand;
+import com.sharehome.member.service.command.SignupCommand;
+import com.sharehome.member.service.command.UpdateMemberCommand;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +45,7 @@ class MemberServiceTest {
         @Test
         void 이메일이_중복되면_예외() {
             // given
-            memberService.join(new MemberCommand(
+            memberService.join(new SignupCommand(
                     "chxxry00@naver.com",
                     "하채리",
                     LocalDate.of(2002, 10, 9),
@@ -49,7 +54,7 @@ class MemberServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    memberService.join(new MemberCommand(
+                    memberService.join(new SignupCommand(
                             "chxxry00@naver.com",
                             "하채리",
                             LocalDate.of(2002, 10, 9),
@@ -62,7 +67,7 @@ class MemberServiceTest {
         @Test
         void 중복되는_이메일이_없으면_회원가입에_성공한다() {
             // when
-            Long memberId = memberService.join(new MemberCommand(
+            Long memberId = memberService.join(new SignupCommand(
                     "chxxry00@naver.com",
                     "하채리",
                     LocalDate.of(2002, 10, 9),
@@ -77,7 +82,7 @@ class MemberServiceTest {
     @Nested
     class 로그인_시 {
 
-        private final MemberCommand command = new MemberCommand(
+        private final SignupCommand command = new SignupCommand(
                 "email123@domain.com",
                 "하영채",
                 LocalDate.of(2002, 10, 9),
@@ -111,6 +116,108 @@ class MemberServiceTest {
             assertThatThrownBy(() ->
                     memberService.login(command.email(), "Invalid1234@")
             ).isInstanceOf(UnauthorizedException.class);
+        }
+    }
+
+    @Nested
+    class 계정관리_시 {
+
+        private Long memberId;
+
+        @BeforeEach
+        void setUp() {
+            SignupCommand signupCommand = new SignupCommand(
+                    "email123@domain.com",
+                    "하영채",
+                    LocalDate.of(2002, 10, 9),
+                    "Password1234@"
+            );
+            memberId = memberService.join(signupCommand);
+        }
+
+        @Test
+        void 해당_id를_가진_회원의_정보를_수정할_수_있다() {
+            // given
+            UpdateMemberCommand command = new UpdateMemberCommand(
+                    memberId,
+                    "채리채리",
+                    new Address("대전", "대학로", "12345")
+            );
+
+            // when
+            memberService.updateMember(command);
+
+            // then
+            Member member = memberRepository.findById(memberId).get();
+            assertThat(member.getNickname()).isEqualTo(command.nickname());
+            assertThat(member.getAddress()).isEqualTo(command.address());
+        }
+
+        @Test
+        void 해당_id를_가진_회원이_없으면_예외() {
+            // given
+            UpdateMemberCommand command = new UpdateMemberCommand(
+                    100L,
+                    "채리채리",
+                    new Address("대전", "대학로", "12345")
+            );
+
+            // when&then
+            assertThatThrownBy(() ->
+                    memberService.updateMember(command)
+            ).isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class 비밀번호_변경_시 {
+
+        private Long memberId;
+        private String oldPassword;
+
+        @BeforeEach
+        void setUp() {
+            SignupCommand signupCommand = new SignupCommand(
+                    "email123@domain.com",
+                    "하영채",
+                    LocalDate.of(2002, 10, 9),
+                    "Password1234@"
+            );
+            memberId = memberService.join(signupCommand);
+            oldPassword = signupCommand.password();
+        }
+
+        @Test
+        void 해당_id를_가진_회원의_비밀번호를_변경할_수_있다() {
+            // given
+            String newPassword = "newPassword1234@";
+            ChangePasswordCommand command = new ChangePasswordCommand(
+                    memberId,
+                    oldPassword,
+                    newPassword
+            );
+
+            // when
+            memberService.changePassword(command);
+
+            // then
+            Member member = memberRepository.findById(memberId).get();
+            assertThat(member.getPassword()).isEqualTo(newPassword);
+        }
+
+        @Test
+        void 해당_id를_가진_회원이_없으면_예외() {
+            // given
+            ChangePasswordCommand command = new ChangePasswordCommand(
+                    100L,
+                    oldPassword,
+                    "newPassword1234@"
+            );
+
+            // when&then
+            assertThatThrownBy(() ->
+                    memberService.changePassword(command)
+            ).isInstanceOf(NotFoundException.class);
         }
     }
 }

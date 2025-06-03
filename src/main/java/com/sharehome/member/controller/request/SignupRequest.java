@@ -4,7 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sharehome.common.exception.BadRequestException;
-import com.sharehome.member.service.command.MemberCommand;
+import com.sharehome.member.service.command.SignupCommand;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -16,11 +16,10 @@ public record SignupRequest(
                 message = "이메일 형식이 올바르지 않습니다."
         )
         @NotNull(message = "이메일은 필수로 입력해야 합니다.")
-        String email
-        ,
+        String email,
         @Pattern(
-            regexp = "^(?:[가-힣]{2,20}|[a-zA-Z]{2,20})$",
-            message = "이름 형식이 올바르지 않습니다."
+                regexp = "^(?:[가-힣]{2,20}|[a-zA-Z]{2,20})$",
+                message = "이름 형식이 올바르지 않습니다."
         )
         @NotNull(message = "사용자 이름은 필수로 입력해야 합니다.")
         String name,
@@ -31,8 +30,8 @@ public record SignupRequest(
         LocalDate birth,
 
         @Pattern(
-            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#,.<>?])[A-Za-z\\d!@#,.<>?]{8,50}$",
-            message = "비밀번호 형식이 올바르지 않습니다."
+                regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#,.<>?])[A-Za-z\\d!@#,.<>?]{8,50}$",
+                message = "비밀번호 형식이 올바르지 않습니다."
         )
         @NotNull(message = "비밀번호는 필수로 입력해야 합니다.")
         String password
@@ -42,8 +41,8 @@ public record SignupRequest(
         validateBirth(birth);
     }
 
-    public MemberCommand toCommand() {
-        return new MemberCommand(
+    public SignupCommand toCommand() {
+        return new SignupCommand(
                 email, name, birth, password
         );
     }
@@ -52,7 +51,7 @@ public record SignupRequest(
         int americanAge = LocalDate.now().minusYears(birth.getYear()).getYear();
 
         if (birth.plusYears(americanAge).isAfter(LocalDate.now())) {
-            americanAge = americanAge -1;
+            americanAge = americanAge - 1;
         }
 
         if (americanAge < 18) {

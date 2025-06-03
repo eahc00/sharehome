@@ -1,21 +1,27 @@
 package com.sharehome.member.controller;
 
 import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.exception.UnauthorizedException;
+import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.member.service.MemberService;
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,6 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @DisplayName("MemberController 은(는)")
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
+@ExtendWith(MockitoExtension.class)
 class MemberControllerTest {
 
     @Autowired
@@ -671,6 +678,77 @@ class MemberControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                         .andExpect(status().isBadRequest());
             }
+        }
+    }
+
+    @Nested
+    class 로그인_시 {
+
+        private final SignupRequest signupRequest = new SignupRequest(
+                "email123@domain.com",
+                "하영채",
+                LocalDate.of(2002, 10, 9),
+                "Password1234@"
+        );
+
+        @BeforeEach
+        public void setup() throws Exception {
+            given(memberService.join(signupRequest.toCommand())).willReturn(1L);
+            memberService.join(signupRequest.toCommand());
+        }
+
+        @Test
+        void 이메일_비밀번호가_일치하면_로그인_성공() throws Exception {
+            // given
+            LoginRequest request = new LoginRequest(
+                    signupRequest.email(),
+                    signupRequest.password()
+            );
+
+            given(memberService.login(request.email(), request.password())).willReturn(1L);
+
+            // when&then
+            mockMvc.perform(post("/members/login")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void 이메일이_다르면_로그인_실패() throws Exception {
+            // given
+            LoginRequest request = new LoginRequest(
+                    "Invalid1@domain.com",
+                    signupRequest.password()
+            );
+
+            given(memberService.login(request.email(), request.password()))
+                    .willThrow(new UnauthorizedException("이메일 혹은 비밀번호가 잘못되어 로그인에 실패하였습니다"));
+
+            // when&then
+            mockMvc.perform(post("/members/login")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void 비밀번호가_다르면_로그인_실패() throws Exception {
+            // given
+            LoginRequest request = new LoginRequest(
+                    signupRequest.email(),
+                    "Invalid1234@"
+            );
+
+            // when
+            given(memberService.login(request.email(), request.password()))
+                    .willThrow(new UnauthorizedException("이메일 혹은 비밀번호가 잘못되어 로그인에 실패하였습니다"));
+
+            // then
+            mockMvc.perform(post("/members/login")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized());
         }
     }
 }
