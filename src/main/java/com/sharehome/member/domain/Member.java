@@ -3,6 +3,7 @@ package com.sharehome.member.domain;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.UnauthorizedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -64,7 +65,7 @@ public class Member {
 
     public void checkPassword(String password) {
         if (!password.equals(this.password)) {
-            throw new UnauthorizedException("비밀번호가 틀립니다");
+            throw new BadRequestException("비밀번호가 틀립니다");
         }
     }
 }
