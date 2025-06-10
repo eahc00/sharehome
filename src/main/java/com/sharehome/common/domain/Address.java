@@ -1,4 +1,4 @@
-package com.sharehome.member.domain;
+package com.sharehome.common.domain;
 
 import static lombok.AccessLevel.PROTECTED;
 

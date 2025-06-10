@@ -1,7 +1,5 @@
 package com.sharehome.member.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 import com.sharehome.common.auth.Auth;
 import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
@@ -14,13 +12,13 @@ import com.sharehome.member.service.command.UpdateMemberCommand;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,13 +28,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @ResponseStatus(CREATED)
     @PostMapping
-    public void signup(
+    public ResponseEntity<Void> signup(
             @RequestBody @Valid SignupRequest request
     ) {
         SignupCommand command = request.toCommand();
-        memberService.join(command);
+        Long memberId = memberService.join(command);
+        return ResponseEntity.created(URI.create("/members/" + memberId)).build();
     }
 
     @PostMapping("/login")
@@ -47,7 +45,6 @@ public class MemberController {
         Long loginMemberId = memberService.login(request.email(), request.password());
         HttpSession session = httpRequest.getSession();
         session.setAttribute("memberId", loginMemberId);
-
         return ResponseEntity.ok().build();
     }
 
@@ -60,7 +57,7 @@ public class MemberController {
         memberService.updateMember(command);
     }
 
-    @PostMapping("/change_password")
+    @PutMapping("/change-password")
     public void changePassword(
             @Auth Long memberId,
             @RequestBody @Valid ChangePasswordRequest request

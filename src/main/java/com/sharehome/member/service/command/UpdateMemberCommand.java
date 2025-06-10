@@ -1,6 +1,6 @@
 package com.sharehome.member.service.command;
 
-import com.sharehome.member.domain.Address;
+import com.sharehome.common.domain.Address;
 
 public record UpdateMemberCommand(
         Long memberId,

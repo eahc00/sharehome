@@ -1,15 +1,24 @@
 package com.sharehome.member.domain;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.sharehome.common.domain.Address;
+import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.UnauthorizedException;
+import com.sharehome.place.domain.Place;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,7 +46,15 @@ public class Member {
     private String nickname;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "member_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "member_street")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "member_zipcode"))
+    })
     private Address address;
+
+    @OneToMany(mappedBy = "member", cascade = ALL)
+    private List<Place> places = new ArrayList<>();
 
     public Member(String email, String name, LocalDate birth, String password) {
         this.email = email;
@@ -64,7 +81,7 @@ public class Member {
 
     public void checkPassword(String password) {
         if (!password.equals(this.password)) {
-            throw new UnauthorizedException("비밀번호가 틀립니다");
+            throw new BadRequestException("비밀번호가 틀립니다");
         }
     }
 }
