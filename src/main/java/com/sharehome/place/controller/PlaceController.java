@@ -21,14 +21,13 @@ public class PlaceController {
 
     private final PlaceService placeService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Void> register(
             @Auth Long memberId,
             @RequestBody @Valid PlaceRegisterRequest request
     ) {
         PlaceRegisterCommand command = request.toCommand(memberId);
         Long placeId = placeService.register(command);
-
         return ResponseEntity.created(URI.create("/place/" + placeId)).build();
     }
 }

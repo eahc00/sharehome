@@ -6,8 +6,10 @@ import com.sharehome.place.domain.PlaceDetailType;
 import com.sharehome.place.domain.PlaceType;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 
+@Builder
 public record PlaceRegisterRequest(
         @Length(min = 2, max = 50)
         @NotNull(message = "숙소 이름은 null일 수 없습니다")
