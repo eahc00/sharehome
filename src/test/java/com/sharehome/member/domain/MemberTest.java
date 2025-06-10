@@ -4,6 +4,7 @@ package com.sharehome.member.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sharehome.common.domain.Address;
 import com.sharehome.common.exception.UnauthorizedException;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;

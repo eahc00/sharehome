@@ -1,6 +1,6 @@
 package com.sharehome.member.controller.request;
 
-import com.sharehome.member.domain.Address;
+import com.sharehome.common.domain.Address;
 import com.sharehome.member.service.command.UpdateMemberCommand;
 
 public record UpdateMemberRequest(

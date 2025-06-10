@@ -3,10 +3,10 @@ package com.sharehome.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sharehome.common.domain.Address;
 import com.sharehome.common.exception.ConflictException;
 import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
-import com.sharehome.member.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.member.service.command.ChangePasswordCommand;
