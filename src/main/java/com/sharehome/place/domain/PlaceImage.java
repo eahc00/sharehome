@@ -17,6 +17,7 @@ public class PlaceImage {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "place_image_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -25,8 +26,4 @@ public class PlaceImage {
 
     @Column(nullable = false, unique = true)
     private String placeImageName;
-
-    public void setPlace(Place place) {
-        this.place = place;
-    }
 }

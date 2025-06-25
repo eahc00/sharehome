@@ -6,9 +6,42 @@ import static com.sharehome.place.domain.PlaceType.RESIDENCE;
 import com.sharehome.common.domain.Address;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.domain.Amenities;
+import com.sharehome.place.domain.Place;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 
 public class PlaceFixture {
+
+    public static Place 숙소_Entity() {
+        return Place.builder()
+                .name("채리호텔")
+                .type(RESIDENCE)
+                .detailType(ALL_SPACE)
+                .address(new Address("대전", "대학로", "12345"))
+                .guestCount(2)
+                .maxGuestCount(4)
+                .bedroomCount(1)
+                .bedCount(1)
+                .bathroomCount(1)
+                .weekdayPrice(50_000L)
+                .weekendPrice(70_000L)
+                .build();
+    }
+
+    public static Place 숙소_Entity2() {
+        return Place.builder()
+                .name("채리호텔2")
+                .type(RESIDENCE)
+                .detailType(ALL_SPACE)
+                .address(new Address("대전", "대학로", "12345"))
+                .guestCount(2)
+                .maxGuestCount(4)
+                .bedroomCount(1)
+                .bedCount(1)
+                .bathroomCount(1)
+                .weekdayPrice(50_000L)
+                .weekendPrice(70_000L)
+                .build();
+    }
 
     public static PlaceRegisterRequest 숙소_등록_request() {
         return PlaceRegisterRequest.builder()
@@ -19,6 +52,7 @@ public class PlaceFixture {
                 .street("대학로")
                 .zipcode("12345")
                 .guestCount(2)
+                .maxGuestCount(4)
                 .bedroomCount(1)
                 .bedCount(1)
                 .bathroomCount(1)
@@ -35,6 +69,7 @@ public class PlaceFixture {
                 .placeDetailType(ALL_SPACE)
                 .address(new Address("대전", "대학로", "12345"))
                 .guestCount(2)
+                .maxGuestCount(4)
                 .bedroomCount(1)
                 .bedCount(1)
                 .bathroomCount(1)

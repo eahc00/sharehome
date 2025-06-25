@@ -1,0 +1,51 @@
+package com.sharehome.reservation.service;
+
+import com.sharehome.common.exception.BadRequestException;
+import com.sharehome.common.exception.ConflictException;
+import com.sharehome.common.exception.NotFoundException;
+import com.sharehome.member.domain.Member;
+import com.sharehome.member.domain.MemberRepository;
+import com.sharehome.place.domain.Place;
+import com.sharehome.place.domain.PlaceRepository;
+import com.sharehome.reservation.domain.Reservation;
+import com.sharehome.reservation.domain.ReservationRepository;
+import com.sharehome.reservation.service.command.ReservePlaceCommand;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ReservationService {
+
+    private final ReservationRepository reservationRepository;
+    private final PlaceRepository placeRepository;
+    private final MemberRepository memberRepository;
+
+    public Long reservePlace(ReservePlaceCommand command) {
+        Place place = placeRepository.findById(command.placeId()).orElseThrow(() ->
+                new NotFoundException("해당 id를 가진 숙소가 없습니다."));
+        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
+                new NotFoundException("해당 id를 가진 회원이 없습니다."));
+
+        validateDuplicatedReservation(command, place);
+        validateGuestCount(command, place);
+        Reservation reservation = new Reservation(
+                place, member, command.checkInDate(), command.checkOutDate(), command.guestCount()
+        );
+        return reservationRepository.save(reservation).getId();
+    }
+
+    private void validateDuplicatedReservation(ReservePlaceCommand command, Place place) {
+        if (!reservationRepository.findAllByPlaceAndReservationDate(
+                command.checkInDate(), command.checkOutDate(), place
+        ).isEmpty()) {
+            throw new ConflictException("해당 숙소에 예약 기간과 중복되는 예약이 존재합니다.");
+        }
+    }
+
+    private static void validateGuestCount(ReservePlaceCommand command, Place place) {
+        if (command.guestCount() > place.getMaxGuestCount()) {
+            throw new BadRequestException("숙소 최대 인원을 초과했습니다.");
+        }
+    }
+}

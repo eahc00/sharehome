@@ -2,6 +2,7 @@ package com.sharehome.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -177,7 +178,7 @@ public class MemberApiTest {
                 .cookie("JSESSIONID", sessionId)
                 .contentType(ContentType.JSON)
                 .body(request)
-                .when().post("/members/change_password")
+                .when().put("/members/change-password")
                 .then()
                 .log().all()
                 .extract();
@@ -204,13 +205,13 @@ public class MemberApiTest {
                 .cookie("JSESSIONID", sessionId)
                 .contentType(ContentType.JSON)
                 .body(request)
-                .when().post("/members/change_password")
+                .when().put("/members/change-password")
                 .then()
                 .log().all()
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
     private static SignupRequest createSignupRequest() {

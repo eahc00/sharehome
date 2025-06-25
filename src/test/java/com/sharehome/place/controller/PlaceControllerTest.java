@@ -61,6 +61,7 @@ class PlaceControllerTest {
                     .street("대학로")
                     .zipcode("12345")
                     .guestCount(2)
+                    .maxGuestCount(4)
                     .bedroomCount(1)
                     .bedCount(1)
                     .bathroomCount(1)

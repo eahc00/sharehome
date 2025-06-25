@@ -33,6 +33,7 @@ public record PlaceRegisterRequest(
         @NotNull(message = "기본 게스트 인원은 null일 수 없습니다")
         Integer guestCount,
 
+        @NotNull(message = "최대 게스트 인원은 null일 수 없습니다")
         Integer maxGuestCount,
 
         @NotNull(message = "침실 수는 null일 수 없습니다")
