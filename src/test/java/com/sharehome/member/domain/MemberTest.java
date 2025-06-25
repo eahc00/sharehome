@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.domain.Address;
+import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.UnauthorizedException;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
@@ -69,6 +70,6 @@ class MemberTest {
         String newPassword = "newPassword1234@";
         assertThatThrownBy(() ->
                 member.changePassword(newPassword, newPassword)
-        ).isInstanceOf(UnauthorizedException.class);
+        ).isInstanceOf(BadRequestException.class);
     }
 }

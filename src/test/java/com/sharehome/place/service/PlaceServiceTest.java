@@ -5,6 +5,7 @@ import static com.sharehome.fixture.PlaceFixture.숙소_등록_command;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.NotFoundException;
+import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.member.service.MemberService;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.place.domain.PlaceRepository;
@@ -32,11 +33,15 @@ class PlaceServiceTest {
     PlaceService placeService;
 
     @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
     PlaceRepository placeRepository;
 
     @BeforeEach
     void setup() {
         placeRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Nested
@@ -46,7 +51,7 @@ class PlaceServiceTest {
 
         @BeforeEach
         void setup() {
-            SignupCommand signupCommand = 영채_회원가입_command;
+            SignupCommand signupCommand = 영채_회원가입_command();
             memberId = memberService.join(signupCommand);
         }
 

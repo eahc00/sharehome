@@ -28,10 +28,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MemberController.class)
-@DisplayName("MemberController 은(는)")
-@DisplayNameGeneration(ReplaceUnderscores.class)
-@SuppressWarnings("NonAsciiCharacters")
 @ExtendWith(MockitoExtension.class)
+@DisplayName("MemberController 은(는)")
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(ReplaceUnderscores.class)
 class MemberControllerTest {
 
     @Autowired

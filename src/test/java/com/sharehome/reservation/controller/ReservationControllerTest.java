@@ -1,0 +1,88 @@
+package com.sharehome.reservation.controller;
+
+import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.reservation.controller.request.ReservePlaceRequest;
+import com.sharehome.reservation.service.ReservationService;
+import java.time.LocalDate;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest(ReservationController.class)
+@DisplayName("ReservationController 은(는)")
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class ReservationControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    ReservationService reservationService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Nested
+    class 예약_생성_시 {
+
+        @Test
+        void 예약_성공() throws Exception {
+            // given
+            ReservePlaceRequest request = new ReservePlaceRequest(
+                    1L,
+                    LocalDate.of(2100, 10, 1),
+                    LocalDate.of(2100, 10, 25),
+                    4
+            );
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            mockMvc.perform(post("/reservation")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isCreated());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "20021009", "20000907", "19991111"
+        })
+        void 과거_날짜로_예약_시_예외(String date) throws Exception {
+            // given
+            LocalDate checkInDate = LocalDate.parse(date, BASIC_ISO_DATE);
+
+            ReservePlaceRequest request = new ReservePlaceRequest(
+                    1L,
+                    checkInDate,
+                    LocalDate.of(2100, 10, 25),
+                    4
+            );
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            mockMvc.perform(post("/reservation")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+}
