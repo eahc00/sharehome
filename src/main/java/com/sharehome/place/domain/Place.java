@@ -32,6 +32,7 @@ public class Place {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "place_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -117,10 +118,5 @@ public class Place {
         this.images = images;
         this.detailInfo = detailInfo;
         this.amenities = amenities;
-    }
-
-    public void addImage(PlaceImage image) {
-        this.images.add(image);
-        image.setPlace(this);
     }
 }
