@@ -1,5 +1,7 @@
 package com.sharehome.fixture;
 
+import com.sharehome.member.domain.Member;
+import com.sharehome.place.domain.Place;
 import com.sharehome.reservation.controller.request.ReservePlaceRequest;
 import com.sharehome.reservation.domain.Reservation;
 import com.sharehome.reservation.service.command.ReservePlaceCommand;
@@ -17,10 +19,10 @@ public class ReservationFixture {
         );
     }
 
-    public static Reservation 예약_Entity() {
+    public static Reservation 예약_Entity(Place place, Member member) {
         return new Reservation(
-                PlaceFixture.숙소_Entity(),
-                MemberFixture.회원_Entity(),
+                place,
+                member,
                 LocalDate.of(2025, 3, 1),
                 LocalDate.of(2025, 3, 5),
                 4
