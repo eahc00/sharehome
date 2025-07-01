@@ -46,8 +46,8 @@ class ReviewServiceTest {
     @BeforeEach
     void setup() {
         reviewRepository.deleteAll();
-        memberRepository.deleteAll();
         reservationRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Nested

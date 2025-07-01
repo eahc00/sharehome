@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharehome.reservation.controller.request.ReservePlaceRequest;
 import com.sharehome.reservation.service.ReservationService;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -45,8 +46,8 @@ class ReservationControllerTest {
             // given
             ReservePlaceRequest request = new ReservePlaceRequest(
                     1L,
-                    LocalDate.of(2100, 10, 1),
-                    LocalDate.of(2100, 10, 25),
+                    LocalDate.now().plusMonths(1),
+                    LocalDate.now().plusMonths(2),
                     4
             );
 
@@ -71,18 +72,77 @@ class ReservationControllerTest {
             ReservePlaceRequest request = new ReservePlaceRequest(
                     1L,
                     checkInDate,
-                    LocalDate.of(2100, 10, 25),
+                    LocalDate.now().plusMonths(2),
                     4
             );
 
             MockHttpSession session = new MockHttpSession();
             session.setAttribute("memberId", 1L);
 
+            // when&then
             mockMvc.perform(post("/reservation")
                             .session(session)
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 체크아웃_날짜가_체크인_날짜보다_과거이면_예외() throws Exception {
+            // given
+            LocalDate checkInDate = LocalDate.now().plusMonths(2);
+            LocalDate checkOutDate = LocalDate.now().plusMonths(1);
+
+            ReservePlaceRequest request = new ReservePlaceRequest(
+                    1L,
+                    LocalDate.now().plusMonths(1),
+                    LocalDate.now().plusMonths(1),
+                    4
+            );
+
+            String content = objectMapper.writeValueAsString(request)
+                    .replaceFirst(getStringFromLocalDate(checkOutDate), getStringFromLocalDate(checkInDate));
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/reservation")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(content))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 체크아웃_날짜가_1년_이후이면_예외() throws Exception {
+            // given
+            LocalDate checkOutDate = LocalDate.now().plusMonths(13);
+
+            ReservePlaceRequest request = new ReservePlaceRequest(
+                    1L,
+                    LocalDate.now().plusMonths(1),
+                    LocalDate.now().plusMonths(2),
+                    4
+            );
+
+            String content = objectMapper.writeValueAsString(request)
+                    .replaceFirst(getStringFromLocalDate(LocalDate.now().plusMonths(2)),
+                            getStringFromLocalDate(checkOutDate));
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/reservation")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(content))
+                    .andExpect(status().isBadRequest());
+        }
+
+        private static String getStringFromLocalDate(LocalDate localDate) {
+            return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
     }
 }

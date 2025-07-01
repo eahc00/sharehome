@@ -13,8 +13,8 @@ public class ReservationFixture {
         return new ReservePlaceCommand(
                 1L,
                 1L,
-                LocalDate.of(2025, 3, 1),
-                LocalDate.of(2025, 3, 5),
+                LocalDate.now().plusMonths(1),
+                LocalDate.now().plusMonths(2),
                 4
         );
     }
@@ -23,8 +23,8 @@ public class ReservationFixture {
         return new Reservation(
                 place,
                 member,
-                LocalDate.of(2025, 3, 1),
-                LocalDate.of(2025, 3, 5),
+                LocalDate.now().plusMonths(1),
+                LocalDate.now().plusMonths(2),
                 4
         );
     }
@@ -32,8 +32,8 @@ public class ReservationFixture {
     public static ReservePlaceRequest 예약_request() {
         return new ReservePlaceRequest(
                 1L,
-                LocalDate.of(2100, 3, 1),
-                LocalDate.of(2100, 3, 4),
+                LocalDate.now().plusMonths(1),
+                LocalDate.now().plusMonths(2),
                 4
         );
     }
