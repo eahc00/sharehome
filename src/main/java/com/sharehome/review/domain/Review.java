@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,7 +33,7 @@ public class Review {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    @NotNull
+    @Column(nullable = false)
     private Integer stars;
 
     private String content;
