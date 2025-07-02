@@ -6,6 +6,7 @@ import com.sharehome.place.domain.Amenities;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceDetailType;
 import com.sharehome.place.domain.PlaceType;
+import java.time.LocalTime;
 import lombok.Builder;
 
 @Builder
@@ -23,6 +24,8 @@ public record PlaceRegisterCommand(
         Long weekdayPrice,
         Long weekendPrice,
         String detailInfo,
+        LocalTime checkInTime,
+        LocalTime checkOutTime,
         Amenities amenities
 ) {
     public Place toPlace(Member member) {
@@ -39,6 +42,8 @@ public record PlaceRegisterCommand(
                 .weekdayPrice(weekdayPrice)
                 .weekendPrice(weekendPrice)
                 .detailInfo(detailInfo)
+                .checkInTime(checkInTime)
+                .checkOutTime(checkOutTime)
                 .amenities(amenities)
                 .member(member)
                 .build();

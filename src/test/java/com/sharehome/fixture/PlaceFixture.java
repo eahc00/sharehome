@@ -12,6 +12,7 @@ import com.sharehome.place.domain.Place;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PlaceFixture {
@@ -29,6 +30,8 @@ public class PlaceFixture {
                 .bathroomCount(1)
                 .weekdayPrice(50_000L)
                 .weekendPrice(70_000L)
+                .checkInTime(LocalTime.of(18, 0, 0))
+                .checkOutTime(LocalTime.of(11, 0, 0))
                 .member(member)
                 .build();
     }
@@ -46,6 +49,8 @@ public class PlaceFixture {
                 .bathroomCount(1)
                 .weekdayPrice(50_000L)
                 .weekendPrice(70_000L)
+                .checkInTime(LocalTime.of(18, 0, 0))
+                .checkOutTime(LocalTime.of(11, 0, 0))
                 .member(member)
                 .build();
     }
@@ -65,6 +70,8 @@ public class PlaceFixture {
                 .bathroomCount(1)
                 .weekdayPrice(50_000L)
                 .weekendPrice(70_000L)
+                .checkInTime(18)
+                .checkOutTime(11)
                 .build();
     }
 
@@ -82,6 +89,8 @@ public class PlaceFixture {
                 .bathroomCount(1)
                 .weekdayPrice(50_000L)
                 .weekendPrice(70_000L)
+                .checkInTime(LocalTime.of(18, 0, 0))
+                .checkOutTime(LocalTime.of(11, 0, 0))
                 .amenities(Amenities.builder().build())
                 .build();
     }
