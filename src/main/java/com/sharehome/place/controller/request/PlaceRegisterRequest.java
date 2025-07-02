@@ -6,11 +6,14 @@ import com.sharehome.place.domain.PlaceDetailType;
 import com.sharehome.place.domain.PlaceType;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalTime;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 @Builder
 public record PlaceRegisterRequest(
+
         @Length(min = 2, max = 50)
         @NotNull(message = "숙소 이름은 null일 수 없습니다")
         String name,
@@ -51,6 +54,14 @@ public record PlaceRegisterRequest(
         @NotNull(message = "주말 기본 요금은 null일 수 없습니다.")
         Long weekendPrice,
 
+        @NotNull(message = "체크인 시간은 null일 수 없습니다.")
+        @Range(min = 0, max = 23)
+        Integer checkInTime,
+
+        @NotNull(message = "체크아웃 시간은 null일 수 없습니다.")
+        @Range(min = 0, max = 23)
+        Integer checkOutTime,
+
         @Length(max = 500)
         String detailInfo,
 
@@ -87,6 +98,8 @@ public record PlaceRegisterRequest(
                 weekdayPrice,
                 weekendPrice,
                 detailInfo,
+                LocalTime.of(checkInTime, 0, 0),
+                LocalTime.of(checkOutTime, 0, 0),
                 amenities
         );
     }

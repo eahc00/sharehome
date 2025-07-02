@@ -72,6 +72,8 @@ class PlaceControllerTest {
                     .bathroomCount(1)
                     .weekdayPrice(50_000L)
                     .weekendPrice(70_000L)
+                    .checkInTime(18)
+                    .checkOutTime(11)
                     .build();
 
             MockHttpSession session = new MockHttpSession();
@@ -100,11 +102,84 @@ class PlaceControllerTest {
                     .street("대학로")
                     .zipcode("12345")
                     .guestCount(2)
+                    .maxGuestCount(4)
                     .bedroomCount(1)
                     .bedCount(1)
                     .bathroomCount(1)
                     .weekdayPrice(50_000L)
                     .weekendPrice(70_000L)
+                    .checkInTime(18)
+                    .checkOutTime(11)
+                    .build();
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/place")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {
+                0, 5, 15, 23
+        })
+        void 체크인_시간이_0부터_23시까지_허용된다(int hour) throws Exception {
+            // given
+            PlaceRegisterRequest request = PlaceRegisterRequest.builder()
+                    .name("채리호텔")
+                    .placeType(RESIDENCE)
+                    .placeDetailType(ALL_SPACE)
+                    .city("대전")
+                    .street("대학로")
+                    .zipcode("12345")
+                    .guestCount(2)
+                    .maxGuestCount(4)
+                    .bedroomCount(1)
+                    .bedCount(1)
+                    .bathroomCount(1)
+                    .weekdayPrice(50_000L)
+                    .weekendPrice(70_000L)
+                    .checkInTime(hour)
+                    .checkOutTime(11)
+                    .build();
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/place")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isCreated());
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {
+                -1, 24, 100
+        })
+        void 체크인_시간이_0부터_23시까지가_아니면_예외(int hour) throws Exception {
+            // given
+            PlaceRegisterRequest request = PlaceRegisterRequest.builder()
+                    .name("채리호텔")
+                    .placeType(RESIDENCE)
+                    .placeDetailType(ALL_SPACE)
+                    .city("대전")
+                    .street("대학로")
+                    .zipcode("12345")
+                    .guestCount(2)
+                    .maxGuestCount(4)
+                    .bedroomCount(1)
+                    .bedCount(1)
+                    .bathroomCount(1)
+                    .weekdayPrice(50_000L)
+                    .weekendPrice(70_000L)
+                    .checkInTime(hour)
+                    .checkOutTime(11)
                     .build();
 
             MockHttpSession session = new MockHttpSession();

@@ -23,6 +23,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,8 +81,15 @@ public class Place {
     @Column(nullable = false)
     private Long weekendPrice;
 
+    @Column(nullable = false)
+    private LocalTime checkInTime;
+
+    @Column(nullable = false)
+    private LocalTime checkOutTime;
+
     @OneToMany(mappedBy = "place", cascade = ALL)
     private List<PlaceImage> images = new ArrayList<>();
+
 
     private String detailInfo;
 
@@ -107,6 +115,8 @@ public class Place {
             Long weekendPrice,
             List<PlaceImage> images,
             String detailInfo,
+            LocalTime checkInTime,
+            LocalTime checkOutTime,
             Amenities amenities
     ) {
         this.id = id;
@@ -124,6 +134,8 @@ public class Place {
         this.weekendPrice = weekendPrice;
         this.images = images;
         this.detailInfo = detailInfo;
+        this.checkInTime = checkInTime;
+        this.checkOutTime = checkOutTime;
         this.amenities = amenities;
     }
 
