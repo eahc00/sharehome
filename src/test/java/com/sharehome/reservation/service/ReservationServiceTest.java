@@ -14,7 +14,9 @@ import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.reservation.domain.Reservation;
 import com.sharehome.reservation.domain.ReservationRepository;
 import com.sharehome.reservation.service.command.ReservePlaceCommand;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @DisplayName("ReservationService 은(는)")
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(ReplaceUnderscores.class)
+@Transactional
 class ReservationServiceTest {
 
     @Autowired
@@ -50,13 +53,13 @@ class ReservationServiceTest {
     @Nested
     class 예약_생성_시 {
 
-        private Long memberId;
-        private Long placeId;
+        private Member savedMember;
+        private Place savedPlace;
 
         @BeforeEach
         void setup() {
-            Member savedMember = memberRepository.save(회원_Entity());
-            Place savedPlace = placeRepository.save(숙소_Entity());
+            savedMember = memberRepository.save(회원_Entity());
+            savedPlace = placeRepository.save(숙소_Entity(savedMember));
             Reservation reservation = new Reservation(
                     savedPlace,
                     savedMember,
@@ -64,8 +67,6 @@ class ReservationServiceTest {
                     LocalDate.of(2025, 3, 5),
                     4
             );
-            memberId = savedMember.getId();
-            placeId = savedPlace.getId();
             reservationRepository.save(reservation);
         }
 
@@ -73,8 +74,8 @@ class ReservationServiceTest {
         void 예약_성공() {
             // given
             ReservePlaceCommand command = new ReservePlaceCommand(
-                    memberId,
-                    placeId,
+                    savedMember.getId(),
+                    savedPlace.getId(),
                     LocalDate.of(2025, 4, 1),
                     LocalDate.of(2025, 4, 5),
                     4);
@@ -90,7 +91,7 @@ class ReservationServiceTest {
             // given
             ReservePlaceCommand command = new ReservePlaceCommand(
                     100L,
-                    placeId,
+                    savedPlace.getId(),
                     LocalDate.of(2025, 4, 1),
                     LocalDate.of(2025, 4, 5),
                     4);
@@ -105,7 +106,7 @@ class ReservationServiceTest {
         void 일치하는_숙소가_없으면_예외() {
             // given
             ReservePlaceCommand command = new ReservePlaceCommand(
-                    memberId,
+                    savedMember.getId(),
                     100L,
                     LocalDate.of(2025, 4, 1),
                     LocalDate.of(2025, 4, 5),
@@ -121,8 +122,8 @@ class ReservationServiceTest {
         void 해당_숙소에_날짜가_중복되는_예약이_있으면_예외() {
             // given
             ReservePlaceCommand command = new ReservePlaceCommand(
-                    memberId,
-                    placeId,
+                    savedMember.getId(),
+                    savedPlace.getId(),
                     LocalDate.of(2025, 3, 1),
                     LocalDate.of(2025, 3, 3),
                     4
@@ -138,8 +139,8 @@ class ReservationServiceTest {
         void 최대_게스트_인원을_초과하면_예외() {
             // given
             ReservePlaceCommand command = new ReservePlaceCommand(
-                    memberId,
-                    placeId,
+                    savedMember.getId(),
+                    savedPlace.getId(),
                     LocalDate.of(2025, 4, 1),
                     LocalDate.of(2025, 4, 5),
                     5
@@ -149,6 +150,28 @@ class ReservationServiceTest {
             assertThatThrownBy(() ->
                     reservationService.reservePlace(command)
             ).isInstanceOf(BadRequestException.class);
+        }
+
+        @Test
+        void 예약_불가능한_날짜면_예외() {
+            // given
+            savedPlace.addUnavailableDate(
+                    savedMember,
+                    List.of(LocalDate.of(2025, 8, 15))
+            );
+
+            ReservePlaceCommand command = new ReservePlaceCommand(
+                    savedMember.getId(),
+                    savedPlace.getId(),
+                    LocalDate.of(2025, 8, 14),
+                    LocalDate.of(2025, 8, 16),
+                    4
+            );
+
+            // when
+            assertThatThrownBy(() ->
+                    reservationService.reservePlace(command)
+            ).isInstanceOf(ConflictException.class);
         }
     }
 }

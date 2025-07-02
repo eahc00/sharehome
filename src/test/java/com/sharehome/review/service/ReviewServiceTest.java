@@ -46,8 +46,8 @@ class ReviewServiceTest {
     @BeforeEach
     void setup() {
         reviewRepository.deleteAll();
-        memberRepository.deleteAll();
         reservationRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Nested
@@ -60,7 +60,7 @@ class ReviewServiceTest {
         void setup() {
             Member savedMember = memberRepository.save(회원_Entity());
             memberId = savedMember.getId();
-            Place savedPlace = placeRepository.save(숙소_Entity());
+            Place savedPlace = placeRepository.save(숙소_Entity(savedMember));
             reservationId = reservationRepository.save(예약_Entity(savedPlace, savedMember)).getId();
         }
 

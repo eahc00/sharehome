@@ -37,13 +37,13 @@ class ReservationRepositoryTest {
     @Test
     void 숙소와_예약기간을_받아_해당_기간_내_예약을_찾아온다() {
         // given
-        Place place1 = 숙소_Entity();
-        Place place2 = 숙소_Entity2();
         Member member = 회원_Entity();
+        memberRepository.save(member);
 
+        Place place1 = 숙소_Entity(member);
+        Place place2 = 숙소_Entity2(member);
         placeRepository.save(place1);
         placeRepository.save(place2);
-        memberRepository.save(member);
 
         Reservation reservation = new Reservation(
                 place1,

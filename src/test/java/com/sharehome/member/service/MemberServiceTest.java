@@ -12,6 +12,7 @@ import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.member.service.command.UpdateMemberCommand;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @DisplayName("MemberService 은(는)")
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(ReplaceUnderscores.class)
+@Transactional
 class MemberServiceTest {
 
     @Autowired
