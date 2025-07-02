@@ -1,13 +1,17 @@
 package com.sharehome.reservation.controller;
 
 import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.exception.ConflictException;
 import com.sharehome.reservation.controller.request.ReservePlaceRequest;
 import com.sharehome.reservation.service.ReservationService;
+import com.sharehome.reservation.service.command.ReservePlaceCommand;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
@@ -139,6 +143,30 @@ class ReservationControllerTest {
                             .contentType(APPLICATION_JSON)
                             .content(content))
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 예약_불가능일_예약_시_예외() throws Exception {
+            // given
+            ReservePlaceRequest request = new ReservePlaceRequest(
+                    1L,
+                    LocalDate.of(2025, 8, 14),
+                    LocalDate.of(2025, 8, 16),
+                    4
+            );
+
+            given(reservationService.reservePlace(any(ReservePlaceCommand.class)))
+                    .willThrow(new ConflictException("예약 불가능한 날짜입니다."));
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/reservation")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isConflict());
         }
 
         private static String getStringFromLocalDate(LocalDate localDate) {

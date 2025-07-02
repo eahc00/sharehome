@@ -29,9 +29,9 @@ public class ReservationFixture {
         );
     }
 
-    public static ReservePlaceRequest 예약_request() {
+    public static ReservePlaceRequest 예약_request(Long placeId) {
         return new ReservePlaceRequest(
-                1L,
+                placeId,
                 LocalDate.now().plusMonths(1),
                 LocalDate.now().plusMonths(2),
                 4

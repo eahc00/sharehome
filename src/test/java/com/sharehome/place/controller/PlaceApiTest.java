@@ -61,7 +61,8 @@ public class PlaceApiTest {
         joinMemberRequest(영채_회원가입_request());
         ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
         String sessionId = loginResponse.cookie("JSESSIONID");
-        placeRegisterRequest(sessionId, 숙소_등록_request());
+        ExtractableResponse<Response> placeRegisterResponse = placeRegisterRequest(sessionId, 숙소_등록_request());
+        String placeUri = placeRegisterResponse.header("Location");
         UnavailableDateUpdateRequest request = 불가능일_설정_request();
 
         // when
@@ -69,7 +70,7 @@ public class PlaceApiTest {
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(request)
-                .when().post("/place/1/unavailable-date")
+                .when().post(placeUri + "/unavailable-date")
                 .then()
                 .log().all()
                 .extract();

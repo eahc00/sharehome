@@ -45,8 +45,9 @@ public class ReservationApiTest {
         joinMemberRequest(영채_회원가입_request());
         ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
         String sessionId = loginResponse.cookie("JSESSIONID");
-        placeRegisterRequest(sessionId, 숙소_등록_request());
-        ReservePlaceRequest request = 예약_request();
+        ExtractableResponse<Response> placeRegisterResponse = placeRegisterRequest(sessionId, 숙소_등록_request());
+        Long placeId = Long.parseLong(placeRegisterResponse.header("Location").split("/")[2]);
+        ReservePlaceRequest request = 예약_request(placeId);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
@@ -82,8 +83,8 @@ public class ReservationApiTest {
                 .extract();
     }
 
-    private static void placeRegisterRequest(String sessionId, PlaceRegisterRequest request) {
-        ExtractableResponse<Response> response = RestAssured.given()
+    private static ExtractableResponse<Response> placeRegisterRequest(String sessionId, PlaceRegisterRequest request) {
+        return RestAssured.given()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(request)

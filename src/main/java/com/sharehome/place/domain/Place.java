@@ -7,6 +7,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.sharehome.common.domain.Address;
+import com.sharehome.common.exception.BadRequestException;
+import com.sharehome.common.exception.ConflictException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import jakarta.persistence.AttributeOverride;
@@ -135,5 +137,24 @@ public class Place {
         validateMember(member);
         unavailableDate.addAll(localDates);
         unavailableDate = unavailableDate.stream().distinct().collect(Collectors.toList());
+    }
+
+    public void validateGuestCount(int guestCount) {
+        if (guestCount > maxGuestCount) {
+            throw new BadRequestException("숙소 최대 인원을 초과했습니다.");
+        }
+    }
+
+    public void validateAvailableDate(LocalDate checkInDate, LocalDate checkOutDate) {
+        unavailableDate.stream()
+                .filter(it ->
+                        (it.isAfter(checkInDate) && it.isBefore(checkOutDate))
+                                || (it.isEqual(checkInDate))
+                                || (it.isEqual(checkOutDate))
+                )
+                .findAny()
+                .ifPresent(it -> {
+                    throw new ConflictException("예약이 불가능한 날짜입니다.");
+                });
     }
 }

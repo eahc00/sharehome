@@ -1,6 +1,5 @@
 package com.sharehome.reservation.service;
 
-import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.ConflictException;
 import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.member.domain.Member;
@@ -28,7 +27,9 @@ public class ReservationService {
                 new NotFoundException("해당 id를 가진 회원이 없습니다."));
 
         validateDuplicatedReservation(command, place);
-        validateGuestCount(command, place);
+        place.validateAvailableDate(command.checkInDate(), command.checkOutDate());
+        place.validateGuestCount(command.guestCount());
+
         Reservation reservation = new Reservation(
                 place, member, command.checkInDate(), command.checkOutDate(), command.guestCount()
         );
@@ -40,12 +41,6 @@ public class ReservationService {
                 command.checkInDate(), command.checkOutDate(), place
         ).isEmpty()) {
             throw new ConflictException("해당 숙소에 예약 기간과 중복되는 예약이 존재합니다.");
-        }
-    }
-
-    private static void validateGuestCount(ReservePlaceCommand command, Place place) {
-        if (command.guestCount() > place.getMaxGuestCount()) {
-            throw new BadRequestException("숙소 최대 인원을 초과했습니다.");
         }
     }
 }

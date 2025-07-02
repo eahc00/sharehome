@@ -13,6 +13,7 @@ import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("PlaceService 은(는)")
 @DisplayNameGeneration(ReplaceUnderscores.class)
+@Transactional
 class PlaceServiceTest {
 
     @Autowired
