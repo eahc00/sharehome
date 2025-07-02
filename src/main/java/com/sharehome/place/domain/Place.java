@@ -7,6 +7,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.sharehome.common.domain.Address;
+import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -19,8 +20,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +39,7 @@ public class Place {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(nullable = false)
@@ -83,6 +86,8 @@ public class Place {
     @Embedded
     private Amenities amenities;
 
+    private List<LocalDate> unavailableDate = new ArrayList<>();
+
     @Builder
     public Place(
             Long id,
@@ -118,5 +123,17 @@ public class Place {
         this.images = images;
         this.detailInfo = detailInfo;
         this.amenities = amenities;
+    }
+
+    public void validateMember(Member member) {
+        if (!this.member.getId().equals(member.getId())) {
+            throw new UnauthorizedException("인가되지 않은 사용자입니다");
+        }
+    }
+
+    public void addUnavailableDate(Member member, List<LocalDate> localDates) {
+        validateMember(member);
+        unavailableDate.addAll(localDates);
+        unavailableDate = unavailableDate.stream().distinct().collect(Collectors.toList());
     }
 }

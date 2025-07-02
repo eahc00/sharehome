@@ -1,15 +1,18 @@
 package com.sharehome.place.service;
 
-import static com.sharehome.fixture.MemberFixture.영채_회원가입_command;
+import static com.sharehome.fixture.MemberFixture.회원_Entity;
+import static com.sharehome.fixture.PlaceFixture.불가능일_설정_command;
+import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
 import static com.sharehome.fixture.PlaceFixture.숙소_등록_command;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.NotFoundException;
+import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
-import com.sharehome.member.service.MemberService;
-import com.sharehome.member.service.command.SignupCommand;
+import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
+import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,9 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @DisplayName("PlaceService 은(는)")
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class PlaceServiceTest {
-
-    @Autowired
-    MemberService memberService;
 
     @Autowired
     PlaceService placeService;
@@ -51,10 +51,9 @@ class PlaceServiceTest {
 
         @BeforeEach
         void setup() {
-            SignupCommand signupCommand = 영채_회원가입_command();
-            memberId = memberService.join(signupCommand);
+            Member savedMember = memberRepository.save(회원_Entity());
+            memberId = savedMember.getId();
         }
-
 
         @Test
         void 등록_성공() {
@@ -76,6 +75,32 @@ class PlaceServiceTest {
             assertThatThrownBy(() ->
                     placeService.register(placeRegisterCommand)
             ).isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class 숙소_예약불가일_설정_시 {
+
+        Member savedMember;
+        Place savedPlace;
+
+        @BeforeEach
+        void setup() {
+            savedMember = memberRepository.save(회원_Entity());
+            savedPlace = placeRepository.save(숙소_Entity(savedMember));
+        }
+
+        @Test
+        void 설정_성공() {
+            // given
+            UnavailableDateUpdateCommand command = 불가능일_설정_command(
+                    savedMember.getId(), savedPlace.getId()
+            );
+
+            // when&then
+            Assertions.assertDoesNotThrow(() -> {
+                placeService.updateUnavailableDate(command);
+            });
         }
     }
 }

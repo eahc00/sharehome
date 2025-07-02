@@ -56,7 +56,7 @@ class ReservationServiceTest {
         @BeforeEach
         void setup() {
             Member savedMember = memberRepository.save(회원_Entity());
-            Place savedPlace = placeRepository.save(숙소_Entity());
+            Place savedPlace = placeRepository.save(숙소_Entity(savedMember));
             Reservation reservation = new Reservation(
                     savedPlace,
                     savedMember,

@@ -1,5 +1,6 @@
 package com.sharehome.place.controller;
 
+import static com.sharehome.fixture.PlaceFixture.불가능일_설정_request;
 import static com.sharehome.place.domain.PlaceDetailType.ALL_SPACE;
 import static com.sharehome.place.domain.PlaceType.RESIDENCE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -9,11 +10,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharehome.member.service.MemberService;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
+import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.service.PlaceService;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,8 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PlaceController.class)
 @DisplayName("PlaceController 은(는)")
-@DisplayNameGeneration(ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
 class PlaceControllerTest {
 
@@ -107,6 +112,47 @@ class PlaceControllerTest {
 
             // when&then
             mockMvc.perform(post("/place")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    class 숙소_예약불가일_설정_시 {
+
+        @Test
+        void 성공() throws Exception {
+            // given
+            UnavailableDateUpdateRequest request = 불가능일_설정_request();
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/place/1/unavailable-date")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        void 과거의_날짜가_있으면_예외() throws Exception {
+            // given
+            UnavailableDateUpdateRequest request = new UnavailableDateUpdateRequest(
+                    List.of(
+                            LocalDate.now().plusMonths(1),
+                            LocalDate.now().minusMonths(1)
+                    )
+            );
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(post("/place/1/unavailable-date")
                             .session(session)
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
