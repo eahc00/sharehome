@@ -4,6 +4,7 @@ import static com.sharehome.fixture.MemberFixture.회원_Entity;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_command;
 import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
 import static com.sharehome.fixture.PlaceFixture.숙소_등록_command;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.NotFoundException;
@@ -103,6 +104,28 @@ class PlaceServiceTest {
             Assertions.assertDoesNotThrow(() -> {
                 placeService.updateUnavailableDate(command);
             });
+        }
+    }
+
+    @Nested
+    class 숙소_조회_시 {
+
+        Member savedMember;
+        Place savedPlace;
+
+        @BeforeEach
+        void setup() {
+            savedMember = memberRepository.save(회원_Entity());
+            savedPlace = placeRepository.save(숙소_Entity(savedMember));
+        }
+
+        @Test
+        void 숙소_id에_해당하는_숙소를_찾아_반환한다() {
+            // when
+            Place place = placeService.getPlace(savedPlace.getId());
+
+            // then
+            assertThat(place.getId()).isEqualTo(savedPlace.getId());
         }
     }
 }

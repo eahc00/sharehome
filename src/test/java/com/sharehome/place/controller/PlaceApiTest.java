@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
@@ -79,12 +80,33 @@ public class PlaceApiTest {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
+    @Test
+    void 숙소_조회_성공() {
+        // given
+        joinMemberRequest(영채_회원가입_request());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
+        String sessionId = loginResponse.cookie("JSESSIONID");
+        ExtractableResponse<Response> placeRegisterResponse = placeRegisterRequest(sessionId, 숙소_등록_request());
+        String placeUri = placeRegisterResponse.header("Location");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get(placeUri)
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
     private static ExtractableResponse<Response> placeRegisterRequest(String sessionId, PlaceRegisterRequest request) {
         return RestAssured.given()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(request)
-                .when().post("/place")
+                .when().post("/places")
                 .then()
                 .log().all()
                 .extract();
