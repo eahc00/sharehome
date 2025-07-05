@@ -88,7 +88,7 @@ public class ReservationApiTest {
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(request)
-                .when().post("/place")
+                .when().post("/places")
                 .then()
                 .log().all()
                 .extract();

@@ -36,4 +36,10 @@ public class PlaceService {
 
         place.addUnavailableDate(member, command.unavailableDates());
     }
+
+    public Place getPlace(Long placeId) {
+        return placeRepository.findById(placeId).orElseThrow(() ->
+                new NotFoundException("해당 id를 가진 숙소가 없습니다.")
+        );
+    }
 }
