@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class PlacesSearchDao {
+public class PlaceSearchDao {
     Long id;
     String name;
     Integer bedCount;
@@ -16,7 +16,7 @@ public class PlacesSearchDao {
     Long weekendPrice;
 
     @QueryProjection
-    public PlacesSearchDao(
+    public PlaceSearchDao(
             Long id,
             String name,
             Integer bedCount,
@@ -31,7 +31,6 @@ public class PlacesSearchDao {
         this.weekdayPrice = weekdayPrice;
         this.weekendPrice = weekendPrice;
     }
-
 
     public Long getTodayPrice() {
         DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();

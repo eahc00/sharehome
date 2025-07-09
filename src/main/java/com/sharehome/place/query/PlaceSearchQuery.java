@@ -6,9 +6,9 @@ import static com.sharehome.place.domain.QUnavailableDate.unavailableDate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sharehome.place.query.dao.PlaceSearchCondition;
-import com.sharehome.place.query.dao.PlacesSearchDao;
-import com.sharehome.place.query.dao.QPlacesSearchDto;
+import com.sharehome.place.query.dao.PlaceSearchDao;
+import com.sharehome.place.query.dao.QPlaceSearchDao;
+import com.sharehome.place.query.dto.PlaceSearchCondition;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,9 +26,9 @@ public class PlaceSearchQuery {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public List<PlacesSearchDao> searchPlaces(PlaceSearchCondition condition) {
+    public List<PlaceSearchDao> searchPlaces(PlaceSearchCondition condition) {
         return queryFactory
-                .select(new QPlacesSearchDto(
+                .select(new QPlaceSearchDao(
                         place.id,
                         place.name,
                         place.bedCount,
@@ -40,15 +40,16 @@ public class PlaceSearchQuery {
                 .where(
                         nameContains(condition.name()),
                         guestCountGoe(condition.guestCount()),
-                        cityEq(condition.city())
+                        cityEq(condition.city()),
+                        isValidDate(condition.checkInDate(), condition.checkOutDate())
                 )
                 .fetch();
     }
 
-    public Page<PlacesSearchDao> searchPlacesPage(PlaceSearchCondition condition, Pageable pageable) {
+    public Page<PlaceSearchDao> searchPlacesPage(PlaceSearchCondition condition, Pageable pageable) {
 
-        List<PlacesSearchDao> content = queryFactory
-                .select(new QPlacesSearchDto(
+        List<PlaceSearchDao> content = queryFactory
+                .select(new QPlaceSearchDao(
                         place.id,
                         place.name,
                         place.bedCount,

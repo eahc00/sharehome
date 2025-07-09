@@ -11,8 +11,8 @@ import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
-import com.sharehome.place.query.dao.PlaceSearchCondition;
-import com.sharehome.place.query.dao.PlacesSearchDao;
+import com.sharehome.place.query.dao.PlaceSearchDao;
+import com.sharehome.place.query.dto.PlaceSearchCondition;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
@@ -67,7 +67,7 @@ class PlaceSearchQueryTest {
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 4);
-        Page<PlacesSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
+        Page<PlaceSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
 
         // then
         assertThat(result.getContent()).extracting("name")
@@ -84,7 +84,7 @@ class PlaceSearchQueryTest {
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 4);
-        Page<PlacesSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
+        Page<PlaceSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
 
         // then
         assertThat(result.getContent()).extracting("name")
@@ -100,7 +100,7 @@ class PlaceSearchQueryTest {
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 4);
-        Page<PlacesSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
+        Page<PlaceSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
 
         // then
         assertThat(result.getContent()).extracting("name")
@@ -131,7 +131,7 @@ class PlaceSearchQueryTest {
         placeRepository.flush();
         // when
         PageRequest pageRequest = PageRequest.of(0, 4);
-        Page<PlacesSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
+        Page<PlaceSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
 
         // then
         assertThat(result.getContent()).extracting("name")
@@ -160,7 +160,7 @@ class PlaceSearchQueryTest {
         placeRepository.flush();
         // when
         PageRequest pageRequest = PageRequest.of(0, 4);
-        Page<PlacesSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
+        Page<PlaceSearchDao> result = placeSearchQuery.searchPlacesPage(condition, pageRequest);
 
         // then
         assertThat(result.getContent()).extracting("name")

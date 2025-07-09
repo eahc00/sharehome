@@ -1,4 +1,4 @@
-package com.sharehome.place.query.dao;
+package com.sharehome.place.query.dto;
 
 import java.time.LocalDate;
 
