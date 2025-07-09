@@ -250,7 +250,7 @@ class PlaceControllerTest {
         void 조회_성공() throws Exception {
             // given
             Member member = MemberFixture.회원_Entity();
-            Place place = PlaceFixture.숙소_Entity(member);
+            Place place = PlaceFixture.채리호텔_Entity(member);
             ReflectionTestUtils.setField(place, "id", 1L);
             BDDMockito.given(placeService.getPlace(1L))
                     .willReturn(place);

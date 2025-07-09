@@ -1,8 +1,8 @@
 package com.sharehome.reservation.domain;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
-import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
-import static com.sharehome.fixture.PlaceFixture.숙소_Entity2;
+import static com.sharehome.fixture.PlaceFixture.채리모텔_Entity;
+import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sharehome.member.domain.Member;
@@ -40,8 +40,8 @@ class ReservationRepositoryTest {
         Member member = 회원_Entity();
         memberRepository.save(member);
 
-        Place place1 = 숙소_Entity(member);
-        Place place2 = 숙소_Entity2(member);
+        Place place1 = 채리호텔_Entity(member);
+        Place place2 = 채리모텔_Entity(member);
         placeRepository.save(place1);
         placeRepository.save(place2);
 

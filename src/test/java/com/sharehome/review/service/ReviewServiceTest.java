@@ -1,7 +1,7 @@
 package com.sharehome.review.service;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
-import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
+import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static com.sharehome.fixture.ReservationFixture.예약_Entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -60,7 +60,7 @@ class ReviewServiceTest {
         void setup() {
             Member savedMember = memberRepository.save(회원_Entity());
             memberId = savedMember.getId();
-            Place savedPlace = placeRepository.save(숙소_Entity(savedMember));
+            Place savedPlace = placeRepository.save(채리호텔_Entity(savedMember));
             reservationId = reservationRepository.save(예약_Entity(savedPlace, savedMember)).getId();
         }
 
