@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -90,17 +89,16 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = ALL)
     private List<PlaceImage> images = new ArrayList<>();
 
-
     private String detailInfo;
 
     @Embedded
     private Amenities amenities;
 
-    private List<LocalDate> unavailableDate = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = ALL)
+    private List<UnavailableDate> unavailableDates = new ArrayList<>();
 
     @Builder
     public Place(
-            Long id,
             Member member,
             String name,
             PlaceType type,
@@ -119,7 +117,6 @@ public class Place {
             LocalTime checkOutTime,
             Amenities amenities
     ) {
-        this.id = id;
         this.member = member;
         this.name = name;
         this.type = type;
@@ -147,8 +144,11 @@ public class Place {
 
     public void addUnavailableDate(Member member, List<LocalDate> localDates) {
         validateMember(member);
-        unavailableDate.addAll(localDates);
-        unavailableDate = unavailableDate.stream().distinct().collect(Collectors.toList());
+        for (LocalDate localDate : localDates) {
+            if (!getUnavailableDateValues().contains(localDate)) {
+                unavailableDates.add(new UnavailableDate(this, localDate));
+            }
+        }
     }
 
     public void validateGuestCount(int guestCount) {
@@ -158,15 +158,21 @@ public class Place {
     }
 
     public void validateAvailableDate(LocalDate checkInDate, LocalDate checkOutDate) {
-        unavailableDate.stream()
+        unavailableDates.stream()
                 .filter(it ->
-                        (it.isAfter(checkInDate) && it.isBefore(checkOutDate))
-                                || (it.isEqual(checkInDate))
-                                || (it.isEqual(checkOutDate))
+                        (it.getDate().isAfter(checkInDate) && it.getDate().isBefore(checkOutDate))
+                                || (it.getDate().isEqual(checkInDate))
+                                || (it.getDate().isEqual(checkOutDate))
                 )
                 .findAny()
                 .ifPresent(it -> {
                     throw new ConflictException("예약이 불가능한 날짜입니다.");
                 });
+    }
+
+    public List<LocalDate> getUnavailableDateValues() {
+        return unavailableDates.stream()
+                .map(UnavailableDate::getDate)
+                .toList();
     }
 }

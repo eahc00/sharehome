@@ -1,22 +1,29 @@
 package com.sharehome.place.controller;
 
+import static com.sharehome.fixture.MemberFixture.회원_Entity;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_request;
+import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static com.sharehome.place.domain.PlaceDetailType.ALL_SPACE;
 import static com.sharehome.place.domain.PlaceType.RESIDENCE;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharehome.fixture.MemberFixture;
-import com.sharehome.fixture.PlaceFixture;
+import com.sharehome.common.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.service.MemberService;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
+import com.sharehome.place.controller.request.PlaceSearchRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.Place;
+import com.sharehome.place.query.PlaceSearchQuery;
+import com.sharehome.place.query.dao.PlaceSearchDao;
 import com.sharehome.place.service.PlaceService;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,13 +35,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.BDDMockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PlaceController.class)
@@ -52,6 +59,9 @@ class PlaceControllerTest {
 
     @MockitoBean
     private MemberService memberService;
+
+    @MockitoBean
+    private PlaceSearchQuery placeSearchQuery;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -249,10 +259,10 @@ class PlaceControllerTest {
         @Test
         void 조회_성공() throws Exception {
             // given
-            Member member = MemberFixture.회원_Entity();
-            Place place = PlaceFixture.숙소_Entity(member);
-            ReflectionTestUtils.setField(place, "id", 1L);
-            BDDMockito.given(placeService.getPlace(1L))
+            Member member = 회원_Entity();
+            Place place = 채리호텔_Entity(member);
+            setField(place, "id", 1L);
+            given(placeService.getPlace(1L))
                     .willReturn(place);
 
             // when&then
@@ -260,6 +270,45 @@ class PlaceControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value("채리호텔"));
 
+        }
+
+        @Test
+        void 조건에_맞는_조회_성공() throws Exception {
+            // given
+            List<PlaceSearchDao> content = List.of(
+                    new PlaceSearchDao(
+                            1L,
+                            "채리호텔",
+                            2,
+                            new Address("대전", null, null),
+                            50_000L,
+                            70_000L
+                    ),
+                    new PlaceSearchDao(
+                            2L,
+                            "채리서울게하",
+                            2,
+                            new Address("서울", null, null),
+                            70_000L,
+                            90_000L
+                    )
+            );
+            PageRequest pageable = PageRequest.of(0, 4);
+            given(placeSearchQuery.searchPlacesPage(any(), any()))
+                    .willReturn(PageableExecutionUtils.getPage(content, pageable, content::size));
+
+            PlaceSearchRequest request = new PlaceSearchRequest(
+                    "채리", null, 4, null, null
+            );
+
+            // when&then
+            mockMvc.perform(get("/places")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content[0].name").value("채리호텔"))
+                    .andExpect(jsonPath("$.content[1].name").value("채리서울게하"));
         }
     }
 }

@@ -2,15 +2,21 @@ package com.sharehome.place.controller;
 
 import com.sharehome.common.auth.Auth;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
+import com.sharehome.place.controller.request.PlaceSearchRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.controller.response.PlaceResponse;
+import com.sharehome.place.controller.response.PlaceSearchResponse;
 import com.sharehome.place.domain.Place;
+import com.sharehome.place.query.PlaceSearchQuery;
+import com.sharehome.place.query.dao.PlaceSearchDao;
 import com.sharehome.place.service.PlaceService;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController {
 
     private final PlaceService placeService;
+    private final PlaceSearchQuery placeSearchQuery;
 
     @PostMapping
     public ResponseEntity<Void> register(
@@ -53,5 +60,14 @@ public class PlaceController {
         Place place = placeService.getPlace(placeId);
         PlaceResponse response = PlaceResponse.fromPlace(place);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public Page<PlaceSearchResponse> placesSearch(
+            @RequestBody PlaceSearchRequest request,
+            Pageable pageable
+    ) {
+        Page<PlaceSearchDao> queryResult = placeSearchQuery.searchPlacesPage(request.toCondition(), pageable);
+        return PlaceSearchResponse.from(queryResult);
     }
 }

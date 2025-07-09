@@ -45,7 +45,7 @@ public record PlaceResponse(
                 place.getCheckOutTime(),
                 place.getDetailInfo(),
                 place.getAmenities(),
-                place.getUnavailableDate()
+                place.getUnavailableDateValues()
         );
     }
 }

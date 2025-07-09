@@ -1,7 +1,7 @@
 package com.sharehome.place.domain;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
-import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
+import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,7 +28,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         // when&then
         Assertions.assertDoesNotThrow(() -> {
@@ -41,7 +41,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         Member member2 = 회원_Entity();
 
@@ -56,7 +56,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
@@ -69,8 +69,8 @@ class PlaceTest {
         place.addUnavailableDate(member, unavailableDates);
 
         // then
-        assertThat(place.getUnavailableDate().size()).isEqualTo(2);
-        assertThat(place.getUnavailableDate()).contains(unavailableDate1, unavailableDate2);
+        assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
+        assertThat(place.getUnavailableDateValues()).contains(unavailableDate1, unavailableDate2);
     }
 
     @Test
@@ -78,7 +78,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
@@ -94,7 +94,7 @@ class PlaceTest {
         place.addUnavailableDate(member, List.of(unavailableDate3));
 
         // then
-        assertThat(place.getUnavailableDate().size()).isEqualTo(2);
+        assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
     }
 
     @Test
@@ -102,7 +102,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
@@ -127,7 +127,7 @@ class PlaceTest {
         // given
         Member member = 회원_Entity();
         ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 숙소_Entity(member);
+        Place place = 채리호텔_Entity(member);
 
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);

@@ -1,7 +1,7 @@
 package com.sharehome.reservation.service;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
-import static com.sharehome.fixture.PlaceFixture.숙소_Entity;
+import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.BadRequestException;
@@ -59,7 +59,7 @@ class ReservationServiceTest {
         @BeforeEach
         void setup() {
             savedMember = memberRepository.save(회원_Entity());
-            savedPlace = placeRepository.save(숙소_Entity(savedMember));
+            savedPlace = placeRepository.save(채리호텔_Entity(savedMember));
             Reservation reservation = new Reservation(
                     savedPlace,
                     savedMember,

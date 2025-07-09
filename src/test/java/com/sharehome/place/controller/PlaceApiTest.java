@@ -13,6 +13,7 @@ import static org.springframework.http.HttpStatus.OK;
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
+import com.sharehome.place.controller.request.PlaceSearchRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.PlaceRepository;
 import io.restassured.RestAssured;
@@ -93,6 +94,31 @@ public class PlaceApiTest {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .when().get(placeUri)
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    @Test
+    void 숙소_검색_성공() {
+        // given
+        joinMemberRequest(영채_회원가입_request());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
+        String sessionId = loginResponse.cookie("JSESSIONID");
+        placeRegisterRequest(sessionId, 숙소_등록_request());
+
+        PlaceSearchRequest request = new PlaceSearchRequest(
+                "채리", "대전", 2, null, null
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().get("/places")
                 .then()
                 .log().all()
                 .extract();
