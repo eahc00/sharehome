@@ -9,6 +9,7 @@ import static lombok.AccessLevel.PROTECTED;
 import com.sharehome.common.domain.Address;
 import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.ConflictException;
+import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import jakarta.persistence.AttributeOverride;
@@ -94,7 +95,7 @@ public class Place {
     @Embedded
     private Amenities amenities;
 
-    @OneToMany(mappedBy = "place", cascade = ALL)
+    @OneToMany(mappedBy = "place", cascade = ALL, orphanRemoval = true)
     private List<UnavailableDate> unavailableDates = new ArrayList<>();
 
     @Builder
@@ -151,6 +152,17 @@ public class Place {
         }
     }
 
+    public void removeUnavailableDate(Member member, List<LocalDate> localDates) {
+        validateMember(member);
+        for (LocalDate localDate : localDates) {
+            UnavailableDate unavailableDate = unavailableDates.stream()
+                    .filter(it -> it.getDate().equals(localDate))
+                    .findAny()
+                    .orElseThrow(() -> new NotFoundException("해당 날짜는 예약 불가능일에 존재하지 않습니다. : " + localDate));
+            unavailableDates.remove(unavailableDate);
+        }
+    }
+
     public void validateGuestCount(int guestCount) {
         if (guestCount > maxGuestCount) {
             throw new BadRequestException("숙소 최대 인원을 초과했습니다.");
@@ -174,5 +186,29 @@ public class Place {
         return unavailableDates.stream()
                 .map(UnavailableDate::getDate)
                 .toList();
+    }
+
+    public void changePlaceInfo(
+            Member member,
+            String name,
+            Integer bedCount,
+            Integer bedroomCount,
+            String detailInfo,
+            Long weekdayPrice,
+            Long weekendPrice,
+            LocalTime checkInTime,
+            LocalTime checkOutTime,
+            Amenities amenities
+    ) {
+        validateMember(member);
+        this.name = name;
+        this.bedCount = bedCount;
+        this.bedroomCount = bedroomCount;
+        this.detailInfo = detailInfo;
+        this.weekdayPrice = weekdayPrice;
+        this.weekendPrice = weekendPrice;
+        this.checkInTime = checkInTime;
+        this.checkOutTime = checkOutTime;
+        this.amenities = amenities;
     }
 }

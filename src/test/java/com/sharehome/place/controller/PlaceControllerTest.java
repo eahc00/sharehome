@@ -1,7 +1,9 @@
 package com.sharehome.place.controller;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
+import static com.sharehome.fixture.PlaceFixture.불가능일_삭제_request;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_request;
+import static com.sharehome.fixture.PlaceFixture.숙소_수정_request;
 import static com.sharehome.fixture.PlaceFixture.채리호텔_Entity;
 import static com.sharehome.place.domain.PlaceDetailType.ALL_SPACE;
 import static com.sharehome.place.domain.PlaceType.RESIDENCE;
@@ -9,8 +11,10 @@ import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,6 +24,8 @@ import com.sharehome.member.domain.Member;
 import com.sharehome.member.service.MemberService;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.controller.request.PlaceSearchRequest;
+import com.sharehome.place.controller.request.PlaceUpdateRequest;
+import com.sharehome.place.controller.request.UnavailableDateDeleteRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.query.PlaceSearchQuery;
@@ -213,10 +219,10 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class 숙소_예약불가일_설정_시 {
+    class 숙소_예약불가일 {
 
         @Test
-        void 성공() throws Exception {
+        void 설정_성공() throws Exception {
             // given
             UnavailableDateUpdateRequest request = 불가능일_설정_request();
 
@@ -232,7 +238,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 과거의_날짜가_있으면_예외() throws Exception {
+        void 설정시_과거의_날짜가_있으면_예외() throws Exception {
             // given
             UnavailableDateUpdateRequest request = new UnavailableDateUpdateRequest(
                     List.of(
@@ -250,6 +256,22 @@ class PlaceControllerTest {
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 제거_성공() throws Exception {
+            // given
+            UnavailableDateDeleteRequest request = 불가능일_삭제_request();
+
+            MockHttpSession session = new MockHttpSession();
+            session.setAttribute("memberId", 1L);
+
+            // when&then
+            mockMvc.perform(delete("/places/1/unavailable-date")
+                            .session(session)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isNoContent());
         }
     }
 
@@ -304,11 +326,27 @@ class PlaceControllerTest {
             // when&then
             mockMvc.perform(get("/places")
                             .contentType(APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request))
-                    )
+                            .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content[0].name").value("채리호텔"))
                     .andExpect(jsonPath("$.content[1].name").value("채리서울게하"));
         }
+    }
+
+    @Test
+    void 숙소를_수정한다() throws Exception {
+        // given
+        PlaceUpdateRequest request = 숙소_수정_request();
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("memberId", 1L);
+
+        // when & then
+        mockMvc.perform(put("/places/1")
+                        .session(session)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
     }
 }

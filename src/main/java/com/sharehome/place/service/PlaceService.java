@@ -1,14 +1,16 @@
 package com.sharehome.place.service;
 
-import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
+import com.sharehome.place.service.command.PlaceUpdateCommand;
+import com.sharehome.place.service.command.UnavailableDateDeleteCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,28 +20,49 @@ public class PlaceService {
     private final MemberRepository memberRepository;
 
     public Long register(PlaceRegisterCommand command) {
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 회원이 없습니다.")
-        );
+        Member member = memberRepository.getById(command.memberId());
+
         Place place = command.toPlace(member);
         return placeRepository.save(place)
                 .getId();
     }
 
+    @Transactional
     public void updateUnavailableDate(UnavailableDateUpdateCommand command) {
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 회원이 없습니다.")
-        );
-        Place place = placeRepository.findById(command.placeId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 숙소가 없습니다.")
-        );
+        Member member = memberRepository.getById(command.memberId());
+        Place place = placeRepository.getById(command.placeId());
 
         place.addUnavailableDate(member, command.unavailableDates());
     }
 
+    @Transactional
+    public void deleteUnavailableDate(UnavailableDateDeleteCommand command) {
+        Member member = memberRepository.getById(command.memberId());
+        Place place = placeRepository.getById(command.placeId());
+
+        place.removeUnavailableDate(member, command.unavailableDates());
+    }
+
     public Place getPlace(Long placeId) {
-        return placeRepository.findById(placeId).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 숙소가 없습니다.")
+        return placeRepository.getById(placeId);
+    }
+
+    @Transactional
+    public void updatePlace(PlaceUpdateCommand command) {
+        Member member = memberRepository.getById(command.memberId());
+        Place place = placeRepository.getById(command.placeId());
+
+        place.changePlaceInfo(
+                member,
+                command.name(),
+                command.bedCount(),
+                command.bedroomCount(),
+                command.detailInfo(),
+                command.weekdayPrice(),
+                command.weekendPrice(),
+                command.checkInTime(),
+                command.checkOutTime(),
+                command.amenities()
         );
     }
 }
