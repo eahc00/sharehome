@@ -1,7 +1,6 @@
 package com.sharehome.member.service;
 
 import com.sharehome.common.exception.ConflictException;
-import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
@@ -42,15 +41,13 @@ public class MemberService {
 
     @Transactional
     public void updateMember(UpdateMemberCommand command) {
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 회원이 없습니다."));
+        Member member = memberRepository.getById(command.memberId());
         member.update(command.nickname(), command.address());
     }
 
     @Transactional
     public void changePassword(ChangePasswordCommand command) {
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 회원이 없습니다."));
+        Member member = memberRepository.getById(command.memberId());
         member.changePassword(command.oldPassword(), command.newPassword());
     }
 }

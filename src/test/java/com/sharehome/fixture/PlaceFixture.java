@@ -6,10 +6,12 @@ import static com.sharehome.place.domain.PlaceType.RESIDENCE;
 import com.sharehome.common.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
+import com.sharehome.place.controller.request.PlaceUpdateRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.Amenities;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
+import com.sharehome.place.service.command.PlaceUpdateCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -151,6 +153,52 @@ public class PlaceFixture {
                         LocalDate.of(2025, 8, 1),
                         LocalDate.of(2025, 8, 15)
                 )
+        );
+    }
+
+    public static PlaceUpdateRequest 숙소_수정_request() {
+        return new PlaceUpdateRequest(
+                "수정호텔",
+                1,
+                1,
+                "",
+                60_000L,
+                70_000L,
+                16,
+                11,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false
+        );
+    }
+
+    ;
+
+    public static PlaceUpdateCommand 숙소_수정_command(Long memberId, Long placeId) {
+        return new PlaceUpdateCommand(
+                memberId,
+                placeId,
+                "수정호텔",
+                1,
+                1,
+                "",
+                60_000L,
+                70_000L,
+                LocalTime.of(16, 0),
+                LocalTime.of(11, 0),
+                Amenities.builder()
+                        .hasWifi(true)
+                        .hasTv(true)
+                        .hasBarbecue(false)
+                        .hasKitchen(false)
+                        .hasParking(false)
+                        .hasPool(false)
+                        .hasWasher(false)
+                        .build()
         );
     }
 }

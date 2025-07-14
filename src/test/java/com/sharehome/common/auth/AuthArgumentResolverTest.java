@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.controller.MemberController;
-import com.sharehome.member.controller.request.UpdateMemberRequest;
+import com.sharehome.member.controller.request.MemberUpdateRequest;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,6 +90,6 @@ class AuthArgumentResolverTest {
     private MethodParameter createUpdateMemberMethodParameter(int parameterIndex) throws NoSuchMethodException {
         return new MethodParameter(
                 memberController.getClass()
-                        .getMethod("updateMember", Long.class, UpdateMemberRequest.class), parameterIndex);
+                        .getMethod("updateMember", Long.class, MemberUpdateRequest.class), parameterIndex);
     }
 }

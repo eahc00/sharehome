@@ -175,4 +175,28 @@ public class Place {
                 .map(UnavailableDate::getDate)
                 .toList();
     }
+
+    public void changePlaceInfo(
+            Member member,
+            String name,
+            Integer bedCount,
+            Integer bedroomCount,
+            String detailInfo,
+            Long weekdayPrice,
+            Long weekendPrice,
+            LocalTime checkInTime,
+            LocalTime checkOutTime,
+            Amenities amenities
+    ) {
+        validateMember(member);
+        this.name = name;
+        this.bedCount = bedCount;
+        this.bedroomCount = bedroomCount;
+        this.detailInfo = detailInfo;
+        this.weekdayPrice = weekdayPrice;
+        this.weekendPrice = weekendPrice;
+        this.checkInTime = checkInTime;
+        this.checkOutTime = checkOutTime;
+        this.amenities = amenities;
+    }
 }

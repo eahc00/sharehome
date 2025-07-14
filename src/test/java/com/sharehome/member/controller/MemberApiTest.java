@@ -10,8 +10,8 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
+import com.sharehome.member.controller.request.MemberUpdateRequest;
 import com.sharehome.member.controller.request.SignupRequest;
-import com.sharehome.member.controller.request.UpdateMemberRequest;
 import com.sharehome.member.domain.MemberRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -122,7 +122,7 @@ public class MemberApiTest {
         ExtractableResponse<Response> loginResponse = loginMemberRequest(loginRequest);
         String sessionId = loginResponse.cookie("JSESSIONID");
 
-        UpdateMemberRequest request = createUpdateMemberRequest();
+        MemberUpdateRequest request = createUpdateMemberRequest();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
@@ -144,7 +144,7 @@ public class MemberApiTest {
         SignupRequest signupRequest = createSignupRequest();
         joinMemberRequest(signupRequest);
 
-        UpdateMemberRequest request = createUpdateMemberRequest();
+        MemberUpdateRequest request = createUpdateMemberRequest();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
@@ -227,8 +227,8 @@ public class MemberApiTest {
         return new LoginRequest(email, password);
     }
 
-    private static UpdateMemberRequest createUpdateMemberRequest() {
-        return new UpdateMemberRequest("채리채리", "대전", "대학로", "12345");
+    private static MemberUpdateRequest createUpdateMemberRequest() {
+        return new MemberUpdateRequest("채리채리", "대전", "대학로", "12345");
     }
 
     private static ExtractableResponse<Response> joinMemberRequest(SignupRequest request) {

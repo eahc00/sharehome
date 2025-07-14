@@ -9,6 +9,7 @@ import com.sharehome.common.exception.ConflictException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -139,7 +140,6 @@ class PlaceTest {
         place.addUnavailableDate(member, unavailableDates);
 
         // when & then
-
         assertThatThrownBy(() ->
                 place.validateAvailableDate(
                         LocalDate.of(2025, 8, 14),
@@ -147,5 +147,35 @@ class PlaceTest {
                 )
         ).isInstanceOf(ConflictException.class)
                 .hasMessageContaining("예약이 불가능한 날짜입니다.");
+    }
+
+    @Test
+    void 숙소_정보를_변경한다() {
+        // given
+        Member member = 회원_Entity();
+        ReflectionTestUtils.setField(member, "id", 100L);
+        Place place = 채리호텔_Entity(member);
+
+        // when
+        place.changePlaceInfo(
+                member,
+                "대전호텔",
+                2,
+                place.getBedroomCount(),
+                place.getDetailInfo(),
+                60_000L,
+                75_000L,
+                LocalTime.of(16, 0),
+                LocalTime.of(11, 0),
+                place.getAmenities()
+        );
+
+        // then
+        assertThat(place.getName()).isEqualTo("대전호텔");
+        assertThat(place.getBedCount()).isEqualTo(2);
+        assertThat(place.getWeekdayPrice()).isEqualTo(60_000L);
+        assertThat(place.getWeekendPrice()).isEqualTo(75_000L);
+        assertThat(place.getCheckInTime()).isEqualTo(LocalTime.of(16, 0, 0));
+        assertThat(place.getCheckOutTime()).isEqualTo(LocalTime.of(11, 0, 0));
     }
 }

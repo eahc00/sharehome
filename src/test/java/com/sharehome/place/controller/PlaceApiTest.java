@@ -4,6 +4,7 @@ import static com.sharehome.fixture.MemberFixture.영채_로그인_request;
 import static com.sharehome.fixture.MemberFixture.영채_회원가입_request;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_request;
 import static com.sharehome.fixture.PlaceFixture.숙소_등록_request;
+import static com.sharehome.fixture.PlaceFixture.숙소_수정_request;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -14,6 +15,7 @@ import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.controller.request.PlaceSearchRequest;
+import com.sharehome.place.controller.request.PlaceUpdateRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.PlaceRepository;
 import io.restassured.RestAssured;
@@ -119,6 +121,30 @@ public class PlaceApiTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().get("/places")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+    }
+
+    @Test
+    void 숙소_수정_성공() {
+        // given
+        joinMemberRequest(영채_회원가입_request());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
+        String sessionId = loginResponse.cookie("JSESSIONID");
+        ExtractableResponse<Response> placeRegisterResponse = placeRegisterRequest(sessionId, 숙소_등록_request());
+        String placeUri = placeRegisterResponse.header("Location");
+        PlaceUpdateRequest request = 숙소_수정_request();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .sessionId(sessionId)
+                .body(request)
+                .when().put(placeUri)
                 .then()
                 .log().all()
                 .extract();

@@ -1,7 +1,6 @@
 package com.sharehome.reservation.service;
 
 import com.sharehome.common.exception.ConflictException;
-import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
@@ -21,10 +20,8 @@ public class ReservationService {
     private final MemberRepository memberRepository;
 
     public Long reservePlace(ReservePlaceCommand command) {
-        Place place = placeRepository.findById(command.placeId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 숙소가 없습니다."));
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() ->
-                new NotFoundException("해당 id를 가진 회원이 없습니다."));
+        Place place = placeRepository.getById(command.placeId());
+        Member member = memberRepository.getById(command.memberId());
 
         validateDuplicatedReservation(command, place);
         place.validateAvailableDate(command.checkInDate(), command.checkOutDate());

@@ -20,9 +20,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
 
     public Long createReview(ReviewCreateCommand command) {
-        Member member = memberRepository.findById(command.memberId()).orElseThrow(() -> {
-            throw new NotFoundException("해당 id를 가진 회원이 없습니다.");
-        });
+        Member member = memberRepository.getById(command.memberId());
         Reservation reservation = reservationRepository.findById(command.reservationId()).orElseThrow(() -> {
             throw new NotFoundException("해당 id를 가진 예약이 없습니다.");
         });

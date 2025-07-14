@@ -3,8 +3,8 @@ package com.sharehome.member.controller;
 import com.sharehome.common.auth.Auth;
 import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
+import com.sharehome.member.controller.request.MemberUpdateRequest;
 import com.sharehome.member.controller.request.SignupRequest;
-import com.sharehome.member.controller.request.UpdateMemberRequest;
 import com.sharehome.member.service.MemberService;
 import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
@@ -49,20 +49,23 @@ public class MemberController {
     }
 
     @PutMapping("/my")
-    public void updateMember(
+    public ResponseEntity<Void> updateMember(
             @Auth Long memberId,
-            @RequestBody @Valid UpdateMemberRequest request
+            @RequestBody @Valid MemberUpdateRequest request
     ) {
         UpdateMemberCommand command = request.toCommand(memberId);
         memberService.updateMember(command);
+        return ResponseEntity.ok().build();
+
     }
 
     @PutMapping("/change-password")
-    public void changePassword(
+    public ResponseEntity<Void> changePassword(
             @Auth Long memberId,
             @RequestBody @Valid ChangePasswordRequest request
     ) {
         ChangePasswordCommand command = request.toCommand(memberId);
         memberService.changePassword(command);
+        return ResponseEntity.ok().build();
     }
 }

@@ -3,6 +3,7 @@ package com.sharehome.place.controller;
 import com.sharehome.common.auth.Auth;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.controller.request.PlaceSearchRequest;
+import com.sharehome.place.controller.request.PlaceUpdateRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.controller.response.PlaceResponse;
 import com.sharehome.place.controller.response.PlaceSearchResponse;
@@ -11,6 +12,7 @@ import com.sharehome.place.query.PlaceSearchQuery;
 import com.sharehome.place.query.dao.PlaceSearchDao;
 import com.sharehome.place.service.PlaceService;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
+import com.sharehome.place.service.command.PlaceUpdateCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,5 +72,16 @@ public class PlaceController {
     ) {
         Page<PlaceSearchDao> queryResult = placeSearchQuery.searchPlacesPage(request.toCondition(), pageable);
         return PlaceSearchResponse.from(queryResult);
+    }
+
+    @PutMapping("/{placeId}")
+    public ResponseEntity<Void> updatePlaceInfo(
+            @PathVariable Long placeId,
+            @Auth Long memberId,
+            @RequestBody @Valid PlaceUpdateRequest request
+    ) {
+        PlaceUpdateCommand command = request.toCommand(memberId, placeId);
+        placeService.updatePlace(command);
+        return ResponseEntity.ok().build();
     }
 }
