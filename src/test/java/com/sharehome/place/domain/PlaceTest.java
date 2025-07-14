@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.ConflictException;
+import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import java.time.LocalDate;
@@ -177,5 +178,51 @@ class PlaceTest {
         assertThat(place.getWeekendPrice()).isEqualTo(75_000L);
         assertThat(place.getCheckInTime()).isEqualTo(LocalTime.of(16, 0, 0));
         assertThat(place.getCheckOutTime()).isEqualTo(LocalTime.of(11, 0, 0));
+    }
+
+    @Test
+    void 숙소_예약_불가일을_제거한다() {
+        // given
+        Member member = 회원_Entity();
+        ReflectionTestUtils.setField(member, "id", 100L);
+        Place place = 채리호텔_Entity(member);
+
+        LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
+        LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
+
+        List<LocalDate> unavailableDates = new ArrayList<>();
+        unavailableDates.add(unavailableDate1);
+        unavailableDates.add(unavailableDate2);
+        place.addUnavailableDate(member, unavailableDates);
+
+        // when
+        place.removeUnavailableDate(member,
+                List.of(LocalDate.of(2025, 8, 15))
+        );
+
+        // then
+        assertThat(place.getUnavailableDateValues().size()).isEqualTo(1);
+        assertThat(place.getUnavailableDateValues()).contains(unavailableDate1);
+    }
+
+    @Test
+    void 숙소_예약_불가일_제거_시_해당_날짜가_없으면_예외() {
+        // given
+        Member member = 회원_Entity();
+        ReflectionTestUtils.setField(member, "id", 100L);
+        Place place = 채리호텔_Entity(member);
+
+        LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
+        LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
+
+        List<LocalDate> unavailableDates = new ArrayList<>();
+        unavailableDates.add(unavailableDate1);
+        unavailableDates.add(unavailableDate2);
+        place.addUnavailableDate(member, unavailableDates);
+
+        // when
+        assertThatThrownBy(() ->
+                place.removeUnavailableDate(member, List.of(LocalDate.of(2025, 8, 2)))
+        ).isInstanceOf(NotFoundException.class);
     }
 }

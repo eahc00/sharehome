@@ -6,6 +6,7 @@ import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.PlaceUpdateCommand;
+import com.sharehome.place.service.command.UnavailableDateDeleteCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,20 @@ public class PlaceService {
                 .getId();
     }
 
+    @Transactional
     public void updateUnavailableDate(UnavailableDateUpdateCommand command) {
         Member member = memberRepository.getById(command.memberId());
         Place place = placeRepository.getById(command.placeId());
 
         place.addUnavailableDate(member, command.unavailableDates());
+    }
+
+    @Transactional
+    public void deleteUnavailableDate(UnavailableDateDeleteCommand command) {
+        Member member = memberRepository.getById(command.memberId());
+        Place place = placeRepository.getById(command.placeId());
+
+        place.removeUnavailableDate(member, command.unavailableDates());
     }
 
     public Place getPlace(Long placeId) {

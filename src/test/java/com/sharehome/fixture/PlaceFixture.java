@@ -7,11 +7,13 @@ import com.sharehome.common.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.controller.request.PlaceUpdateRequest;
+import com.sharehome.place.controller.request.UnavailableDateDeleteRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.Amenities;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.PlaceUpdateCommand;
+import com.sharehome.place.service.command.UnavailableDateDeleteCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -152,6 +154,24 @@ public class PlaceFixture {
                 List.of(
                         LocalDate.of(2025, 8, 1),
                         LocalDate.of(2025, 8, 15)
+                )
+        );
+    }
+
+    public static UnavailableDateDeleteRequest 불가능일_삭제_request() {
+        return new UnavailableDateDeleteRequest(
+                List.of(
+                        LocalDate.of(2025, 8, 1)
+                )
+        );
+    }
+
+    public static UnavailableDateDeleteCommand 불가능일_삭제_command(Long memberId, Long placeId) {
+        return new UnavailableDateDeleteCommand(
+                memberId,
+                placeId,
+                List.of(
+                        LocalDate.of(2025, 8, 1)
                 )
         );
     }

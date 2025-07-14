@@ -1,6 +1,7 @@
 package com.sharehome.place.service;
 
 import static com.sharehome.fixture.MemberFixture.회원_Entity;
+import static com.sharehome.fixture.PlaceFixture.불가능일_삭제_command;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_command;
 import static com.sharehome.fixture.PlaceFixture.숙소_등록_command;
 import static com.sharehome.fixture.PlaceFixture.숙소_수정_command;
@@ -15,7 +16,10 @@ import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.PlaceUpdateCommand;
+import com.sharehome.place.service.command.UnavailableDateDeleteCommand;
 import com.sharehome.place.service.command.UnavailableDateUpdateCommand;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +88,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class 숙소_예약불가일_설정_시 {
+    class 숙소_예약불가일 {
 
         Member savedMember;
         Place savedPlace;
@@ -105,6 +109,24 @@ class PlaceServiceTest {
             // when&then
             Assertions.assertDoesNotThrow(() -> {
                 placeService.updateUnavailableDate(command);
+            });
+        }
+
+        @Test
+        void 제거_성공() {
+            // given
+            UnavailableDateDeleteCommand command = 불가능일_삭제_command(
+                    savedMember.getId(), savedPlace.getId()
+            );
+
+            savedPlace.addUnavailableDate(savedMember, List.of(
+                    LocalDate.of(2025, 8, 1),
+                    LocalDate.of(2025, 8, 15)
+            ));
+
+            // when&then
+            Assertions.assertDoesNotThrow(() -> {
+                placeService.deleteUnavailableDate(command);
             });
         }
     }

@@ -2,6 +2,7 @@ package com.sharehome.place.controller;
 
 import static com.sharehome.fixture.MemberFixture.영채_로그인_request;
 import static com.sharehome.fixture.MemberFixture.영채_회원가입_request;
+import static com.sharehome.fixture.PlaceFixture.불가능일_삭제_request;
 import static com.sharehome.fixture.PlaceFixture.불가능일_설정_request;
 import static com.sharehome.fixture.PlaceFixture.숙소_등록_request;
 import static com.sharehome.fixture.PlaceFixture.숙소_수정_request;
@@ -16,6 +17,7 @@ import com.sharehome.member.controller.request.SignupRequest;
 import com.sharehome.place.controller.request.PlaceRegisterRequest;
 import com.sharehome.place.controller.request.PlaceSearchRequest;
 import com.sharehome.place.controller.request.PlaceUpdateRequest;
+import com.sharehome.place.controller.request.UnavailableDateDeleteRequest;
 import com.sharehome.place.controller.request.UnavailableDateUpdateRequest;
 import com.sharehome.place.domain.PlaceRepository;
 import io.restassured.RestAssured;
@@ -75,6 +77,31 @@ public class PlaceApiTest {
                 .cookie("JSESSIONID", sessionId)
                 .body(request)
                 .when().post(placeUri + "/unavailable-date")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
+    }
+
+    @Test
+    void 숙소_예약_불가능일_삭제_성공() {
+        // given
+        joinMemberRequest(영채_회원가입_request());
+        ExtractableResponse<Response> loginResponse = loginMemberRequest(영채_로그인_request());
+        String sessionId = loginResponse.cookie("JSESSIONID");
+        ExtractableResponse<Response> placeRegisterResponse = placeRegisterRequest(sessionId, 숙소_등록_request());
+        String placeUri = placeRegisterResponse.header("Location");
+        unavailableDateUpdateRequest(sessionId, 불가능일_설정_request(), placeUri);
+        UnavailableDateDeleteRequest request = 불가능일_삭제_request();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
+                .body(request)
+                .when().delete(placeUri + "/unavailable-date")
                 .then()
                 .log().all()
                 .extract();
@@ -182,5 +209,19 @@ public class PlaceApiTest {
                 .then()
                 .log().all()
                 .extract();
+    }
+
+    private static ExtractableResponse<Response> unavailableDateUpdateRequest(String sessionId,
+                                                                              UnavailableDateUpdateRequest request,
+                                                                              String placeUri) {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
+                .body(request)
+                .when().post(placeUri + "/unavailable-date")
+                .then()
+                .log().all()
+                .extract();
+        return response;
     }
 }
