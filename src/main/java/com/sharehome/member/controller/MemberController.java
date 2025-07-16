@@ -1,6 +1,7 @@
 package com.sharehome.member.controller;
 
 import com.sharehome.common.auth.Auth;
+import com.sharehome.common.auth.SessionService;
 import com.sharehome.member.controller.request.ChangePasswordRequest;
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.MemberUpdateRequest;
@@ -10,7 +11,6 @@ import com.sharehome.member.service.command.ChangePasswordCommand;
 import com.sharehome.member.service.command.SignupCommand;
 import com.sharehome.member.service.command.UpdateMemberCommand;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final SessionService sessionService;
 
     @PostMapping
     public ResponseEntity<Void> signup(
@@ -43,8 +44,7 @@ public class MemberController {
             HttpServletRequest httpRequest
     ) {
         Long loginMemberId = memberService.login(request.email(), request.password());
-        HttpSession session = httpRequest.getSession();
-        session.setAttribute("memberId", loginMemberId);
+        sessionService.createSession(httpRequest, loginMemberId);
         return ResponseEntity.ok().build();
     }
 

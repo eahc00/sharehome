@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.auth.SessionService;
 import com.sharehome.notification.controller.request.NotificationCreateRequest;
 import com.sharehome.notification.service.NotificationService;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +29,8 @@ class NotificationControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    NotificationController notificationController;
+    @MockitoBean
+    SessionService sessionService;
 
     @MockitoBean
     NotificationService notificationService;

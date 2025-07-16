@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.auth.SessionService;
 import com.sharehome.common.exception.ConflictException;
 import com.sharehome.reservation.controller.request.ReservePlaceRequest;
 import com.sharehome.reservation.service.ReservationService;
@@ -38,6 +39,9 @@ class ReservationControllerTest {
 
     @MockitoBean
     ReservationService reservationService;
+
+    @MockitoBean
+    SessionService sessionService;
 
     @Autowired
     ObjectMapper objectMapper;

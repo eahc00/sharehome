@@ -19,7 +19,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 @ExtendWith(MockitoExtension.class)
 class AuthArgumentResolverTest {
 
-    private final AuthArgumentResolver authArgumentResolver = new AuthArgumentResolver();
+    private final AuthArgumentResolver authArgumentResolver = new AuthArgumentResolver(new SessionService());
 
     @Mock
     private MemberController memberController;
