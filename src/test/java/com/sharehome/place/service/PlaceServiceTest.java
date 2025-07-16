@@ -14,6 +14,7 @@ import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
+import com.sharehome.place.domain.UnavailableDate;
 import com.sharehome.place.service.command.PlaceRegisterCommand;
 import com.sharehome.place.service.command.PlaceUpdateCommand;
 import com.sharehome.place.service.command.UnavailableDateDeleteCommand;
@@ -113,21 +114,57 @@ class PlaceServiceTest {
         }
 
         @Test
+        void 추가하는_숙소_예약_불가일이_이미_있으면_추가되지_않는다() {
+            // given
+            UnavailableDate unavailableDate1 = new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 1));
+            UnavailableDate unavailableDate2 = new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 15));
+
+            savedPlace.addUnavailableDate(unavailableDate1);
+            savedPlace.addUnavailableDate(unavailableDate2);
+
+            UnavailableDateUpdateCommand command = new UnavailableDateUpdateCommand(
+                    savedMember.getId(), savedPlace.getId(), List.of(LocalDate.of(2025, 8, 1))
+            );
+
+            // when
+            placeService.updateUnavailableDate(command);
+
+            // then
+            assertThat(savedPlace.getUnavailableDates().size()).isEqualTo(2);
+        }
+
+        @Test
         void 제거_성공() {
             // given
             UnavailableDateDeleteCommand command = 불가능일_삭제_command(
                     savedMember.getId(), savedPlace.getId()
             );
 
-            savedPlace.addUnavailableDate(savedMember, List.of(
-                    LocalDate.of(2025, 8, 1),
-                    LocalDate.of(2025, 8, 15)
-            ));
+            savedPlace.addUnavailableDate(new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 1)));
+            savedPlace.addUnavailableDate(new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 15)));
 
             // when&then
             Assertions.assertDoesNotThrow(() -> {
                 placeService.deleteUnavailableDate(command);
             });
+        }
+
+        @Test
+        void 숙소_예약_불가일_제거_시_해당_날짜가_없으면_예외() {
+            // given
+            savedPlace.addUnavailableDate(new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 1)));
+            savedPlace.addUnavailableDate(new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 15)));
+
+            UnavailableDateDeleteCommand command = new UnavailableDateDeleteCommand(
+                    savedMember.getId(),
+                    savedPlace.getId(),
+                    List.of(LocalDate.of(2025, 8, 2))
+            );
+
+            // when
+            assertThatThrownBy(() ->
+                    placeService.deleteUnavailableDate(command)
+            ).isInstanceOf(NotFoundException.class);
         }
     }
 

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.auth.SessionService;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.controller.request.LoginRequest;
 import com.sharehome.member.controller.request.SignupRequest;
@@ -35,10 +36,13 @@ import org.springframework.test.web.servlet.MockMvc;
 class MemberControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @MockitoBean
-    private MemberService memberService;
+    MemberService memberService;
+
+    @MockitoBean
+    SessionService sessionService;
 
     @Autowired
     ObjectMapper objectMapper;

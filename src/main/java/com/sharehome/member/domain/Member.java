@@ -80,7 +80,7 @@ public class Member {
         this.password = newPassword;
     }
 
-    public void checkPassword(String password) {
+    private void checkPassword(String password) {
         if (!password.equals(this.password)) {
             throw new BadRequestException("비밀번호가 틀립니다");
         }

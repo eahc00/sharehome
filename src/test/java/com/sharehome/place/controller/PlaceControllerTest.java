@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharehome.common.auth.SessionService;
 import com.sharehome.common.domain.Address;
 import com.sharehome.member.domain.Member;
 import com.sharehome.member.service.MemberService;
@@ -64,10 +65,13 @@ class PlaceControllerTest {
     PlaceService placeService;
 
     @MockitoBean
-    private MemberService memberService;
+    MemberService memberService;
 
     @MockitoBean
-    private PlaceSearchQuery placeSearchQuery;
+    PlaceSearchQuery placeSearchQuery;
+
+    @MockitoBean
+    SessionService sessionService;
 
     @Autowired
     ObjectMapper objectMapper;

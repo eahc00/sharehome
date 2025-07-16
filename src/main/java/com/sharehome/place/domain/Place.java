@@ -9,7 +9,6 @@ import static lombok.AccessLevel.PROTECTED;
 import com.sharehome.common.domain.Address;
 import com.sharehome.common.exception.BadRequestException;
 import com.sharehome.common.exception.ConflictException;
-import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import jakarta.persistence.AttributeOverride;
@@ -31,6 +30,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// 숙소 엔티티
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -143,24 +143,12 @@ public class Place {
         }
     }
 
-    public void addUnavailableDate(Member member, List<LocalDate> localDates) {
-        validateMember(member);
-        for (LocalDate localDate : localDates) {
-            if (!getUnavailableDateValues().contains(localDate)) {
-                unavailableDates.add(new UnavailableDate(this, localDate));
-            }
-        }
+    public void addUnavailableDate(UnavailableDate unavailableDate) {
+        unavailableDates.add(unavailableDate);
     }
 
-    public void removeUnavailableDate(Member member, List<LocalDate> localDates) {
-        validateMember(member);
-        for (LocalDate localDate : localDates) {
-            UnavailableDate unavailableDate = unavailableDates.stream()
-                    .filter(it -> it.getDate().equals(localDate))
-                    .findAny()
-                    .orElseThrow(() -> new NotFoundException("해당 날짜는 예약 불가능일에 존재하지 않습니다. : " + localDate));
-            unavailableDates.remove(unavailableDate);
-        }
+    public void removeUnavailableDate(UnavailableDate unavailableDate) {
+        unavailableDates.remove(unavailableDate);
     }
 
     public void validateGuestCount(int guestCount) {
@@ -189,7 +177,6 @@ public class Place {
     }
 
     public void changePlaceInfo(
-            Member member,
             String name,
             Integer bedCount,
             Integer bedroomCount,
@@ -200,7 +187,6 @@ public class Place {
             LocalTime checkOutTime,
             Amenities amenities
     ) {
-        validateMember(member);
         this.name = name;
         this.bedCount = bedCount;
         this.bedroomCount = bedroomCount;

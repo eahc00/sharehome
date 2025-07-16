@@ -6,13 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sharehome.common.exception.ConflictException;
-import com.sharehome.common.exception.NotFoundException;
 import com.sharehome.common.exception.UnauthorizedException;
 import com.sharehome.member.domain.Member;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -63,37 +60,9 @@ class PlaceTest {
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
 
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-
         // when
-        place.addUnavailableDate(member, unavailableDates);
-
-        // then
-        assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
-        assertThat(place.getUnavailableDateValues()).contains(unavailableDate1, unavailableDate2);
-    }
-
-    @Test
-    void 추가하는_숙소_예약_불가일이_이미_있으면_추가되지_않는다() {
-        // given
-        Member member = 회원_Entity();
-        ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 채리호텔_Entity(member);
-
-        LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
-        LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
-        LocalDate unavailableDate3 = LocalDate.of(2025, 8, 1);
-
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-
-        place.addUnavailableDate(member, unavailableDates);
-
-        // when
-        place.addUnavailableDate(member, List.of(unavailableDate3));
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate1));
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate2));
 
         // then
         assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
@@ -109,11 +78,8 @@ class PlaceTest {
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
 
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate1));
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate2));
 
         // when & then
         Assertions.assertDoesNotThrow(() -> {
@@ -134,11 +100,8 @@ class PlaceTest {
         LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
         LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
 
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate1));
+        place.addUnavailableDate(new UnavailableDate(place, unavailableDate2));
 
         // when & then
         assertThatThrownBy(() ->
@@ -159,7 +122,6 @@ class PlaceTest {
 
         // when
         place.changePlaceInfo(
-                member,
                 "대전호텔",
                 2,
                 place.getBedroomCount(),
@@ -187,42 +149,17 @@ class PlaceTest {
         ReflectionTestUtils.setField(member, "id", 100L);
         Place place = 채리호텔_Entity(member);
 
-        LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
-        LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
+        UnavailableDate unavailableDate1 = new UnavailableDate(place, LocalDate.of(2025, 8, 1));
+        UnavailableDate unavailableDate2 = new UnavailableDate(place, LocalDate.of(2025, 8, 15));
 
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDate1);
+        place.addUnavailableDate(unavailableDate2);
 
         // when
-        place.removeUnavailableDate(member,
-                List.of(LocalDate.of(2025, 8, 15))
-        );
+        place.removeUnavailableDate(unavailableDate2);
 
         // then
         assertThat(place.getUnavailableDateValues().size()).isEqualTo(1);
-        assertThat(place.getUnavailableDateValues()).contains(unavailableDate1);
-    }
-
-    @Test
-    void 숙소_예약_불가일_제거_시_해당_날짜가_없으면_예외() {
-        // given
-        Member member = 회원_Entity();
-        ReflectionTestUtils.setField(member, "id", 100L);
-        Place place = 채리호텔_Entity(member);
-
-        LocalDate unavailableDate1 = LocalDate.of(2025, 8, 1);
-        LocalDate unavailableDate2 = LocalDate.of(2025, 8, 15);
-
-        List<LocalDate> unavailableDates = new ArrayList<>();
-        unavailableDates.add(unavailableDate1);
-        unavailableDates.add(unavailableDate2);
-        place.addUnavailableDate(member, unavailableDates);
-
-        // when
-        assertThatThrownBy(() ->
-                place.removeUnavailableDate(member, List.of(LocalDate.of(2025, 8, 2)))
-        ).isInstanceOf(NotFoundException.class);
+        assertThat(place.getUnavailableDates()).contains(unavailableDate1);
     }
 }
