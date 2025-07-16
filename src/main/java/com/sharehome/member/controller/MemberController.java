@@ -56,7 +56,6 @@ public class MemberController {
         UpdateMemberCommand command = request.toCommand(memberId);
         memberService.updateMember(command);
         return ResponseEntity.ok().build();
-
     }
 
     @PutMapping("/change-password")

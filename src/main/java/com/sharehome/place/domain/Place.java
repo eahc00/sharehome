@@ -31,6 +31,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// 숙소 엔티티
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
