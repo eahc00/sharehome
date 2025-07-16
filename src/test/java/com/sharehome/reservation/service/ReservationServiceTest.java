@@ -156,7 +156,6 @@ class ReservationServiceTest {
         void 예약_불가능한_날짜면_예외() {
             // given
             savedPlace.addUnavailableDate(
-                    savedMember,
                     List.of(LocalDate.of(2025, 8, 15))
             );
 

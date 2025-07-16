@@ -144,8 +144,7 @@ public class Place {
         }
     }
 
-    public void addUnavailableDate(Member member, List<LocalDate> localDates) {
-        validateMember(member);
+    public void addUnavailableDate(List<LocalDate> localDates) {
         for (LocalDate localDate : localDates) {
             if (!getUnavailableDateValues().contains(localDate)) {
                 unavailableDates.add(new UnavailableDate(this, localDate));
@@ -153,8 +152,7 @@ public class Place {
         }
     }
 
-    public void removeUnavailableDate(Member member, List<LocalDate> localDates) {
-        validateMember(member);
+    public void removeUnavailableDate(List<LocalDate> localDates) {
         for (LocalDate localDate : localDates) {
             UnavailableDate unavailableDate = unavailableDates.stream()
                     .filter(it -> it.getDate().equals(localDate))
@@ -190,7 +188,6 @@ public class Place {
     }
 
     public void changePlaceInfo(
-            Member member,
             String name,
             Integer bedCount,
             Integer bedroomCount,
@@ -201,7 +198,6 @@ public class Place {
             LocalTime checkOutTime,
             Amenities amenities
     ) {
-        validateMember(member);
         this.name = name;
         this.bedCount = bedCount;
         this.bedroomCount = bedroomCount;

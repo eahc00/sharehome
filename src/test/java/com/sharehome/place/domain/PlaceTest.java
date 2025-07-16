@@ -68,7 +68,7 @@ class PlaceTest {
         unavailableDates.add(unavailableDate2);
 
         // when
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // then
         assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
@@ -90,10 +90,10 @@ class PlaceTest {
         unavailableDates.add(unavailableDate1);
         unavailableDates.add(unavailableDate2);
 
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // when
-        place.addUnavailableDate(member, List.of(unavailableDate3));
+        place.addUnavailableDate(List.of(unavailableDate3));
 
         // then
         assertThat(place.getUnavailableDateValues().size()).isEqualTo(2);
@@ -113,7 +113,7 @@ class PlaceTest {
         unavailableDates.add(unavailableDate1);
         unavailableDates.add(unavailableDate2);
 
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // when & then
         Assertions.assertDoesNotThrow(() -> {
@@ -138,7 +138,7 @@ class PlaceTest {
         unavailableDates.add(unavailableDate1);
         unavailableDates.add(unavailableDate2);
 
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // when & then
         assertThatThrownBy(() ->
@@ -159,7 +159,6 @@ class PlaceTest {
 
         // when
         place.changePlaceInfo(
-                member,
                 "대전호텔",
                 2,
                 place.getBedroomCount(),
@@ -193,10 +192,10 @@ class PlaceTest {
         List<LocalDate> unavailableDates = new ArrayList<>();
         unavailableDates.add(unavailableDate1);
         unavailableDates.add(unavailableDate2);
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // when
-        place.removeUnavailableDate(member,
+        place.removeUnavailableDate(
                 List.of(LocalDate.of(2025, 8, 15))
         );
 
@@ -218,11 +217,11 @@ class PlaceTest {
         List<LocalDate> unavailableDates = new ArrayList<>();
         unavailableDates.add(unavailableDate1);
         unavailableDates.add(unavailableDate2);
-        place.addUnavailableDate(member, unavailableDates);
+        place.addUnavailableDate(unavailableDates);
 
         // when
         assertThatThrownBy(() ->
-                place.removeUnavailableDate(member, List.of(LocalDate.of(2025, 8, 2)))
+                place.removeUnavailableDate(List.of(LocalDate.of(2025, 8, 2)))
         ).isInstanceOf(NotFoundException.class);
     }
 }

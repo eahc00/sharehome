@@ -119,7 +119,7 @@ class PlaceServiceTest {
                     savedMember.getId(), savedPlace.getId()
             );
 
-            savedPlace.addUnavailableDate(savedMember, List.of(
+            savedPlace.addUnavailableDate(List.of(
                     LocalDate.of(2025, 8, 1),
                     LocalDate.of(2025, 8, 15)
             ));

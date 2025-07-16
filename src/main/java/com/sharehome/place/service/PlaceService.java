@@ -32,7 +32,8 @@ public class PlaceService {
         Member member = memberRepository.getById(command.memberId());
         Place place = placeRepository.getById(command.placeId());
 
-        place.addUnavailableDate(member, command.unavailableDates());
+        place.validateMember(member);
+        place.addUnavailableDate(command.unavailableDates());
     }
 
     @Transactional
@@ -40,7 +41,8 @@ public class PlaceService {
         Member member = memberRepository.getById(command.memberId());
         Place place = placeRepository.getById(command.placeId());
 
-        place.removeUnavailableDate(member, command.unavailableDates());
+        place.validateMember(member);
+        place.removeUnavailableDate(command.unavailableDates());
     }
 
     public Place getPlace(Long placeId) {
@@ -52,8 +54,8 @@ public class PlaceService {
         Member member = memberRepository.getById(command.memberId());
         Place place = placeRepository.getById(command.placeId());
 
+        place.validateMember(member);
         place.changePlaceInfo(
-                member,
                 command.name(),
                 command.bedCount(),
                 command.bedroomCount(),

@@ -116,15 +116,15 @@ class PlaceSearchQueryTest {
                 LocalDate.of(2025, 8, 15)
         );
 
-        채리호텔.addUnavailableDate(member, List.of(
+        채리호텔.addUnavailableDate(List.of(
                 LocalDate.of(2025, 8, 16)
         ));
 
-        인천펜션.addUnavailableDate(member, List.of(
+        인천펜션.addUnavailableDate(List.of(
                 LocalDate.of(2025, 8, 3)
         ));
 
-        서울게하.addUnavailableDate(member, List.of(
+        서울게하.addUnavailableDate(List.of(
                 LocalDate.of(2025, 8, 15)
         ));
 
@@ -149,11 +149,11 @@ class PlaceSearchQueryTest {
                 LocalDate.of(2025, 8, 14)
         );
 
-        인천펜션.addUnavailableDate(member, List.of(
+        인천펜션.addUnavailableDate(List.of(
                 LocalDate.of(2025, 8, 3)
         ));
 
-        서울게하.addUnavailableDate(member, List.of(
+        서울게하.addUnavailableDate(List.of(
                 LocalDate.of(2025, 8, 15)
         ));
 
