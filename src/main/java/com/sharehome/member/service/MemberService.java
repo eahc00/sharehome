@@ -22,12 +22,7 @@ public class MemberService {
                 .ifPresent(it -> {
                     throw new ConflictException("해당 이메일로 이미 가입한 회원이 있습니다");
                 });
-        Member member = new Member(
-                command.email(),
-                command.name(),
-                command.birth(),
-                command.password()
-        );
+        Member member = command.toMember();
         return memberRepository.save(member)
                 .getId();
     }
