@@ -11,12 +11,12 @@ import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
+import com.sharehome.place.domain.UnavailableDate;
 import com.sharehome.reservation.domain.Reservation;
 import com.sharehome.reservation.domain.ReservationRepository;
 import com.sharehome.reservation.service.command.ReservePlaceCommand;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -156,7 +156,7 @@ class ReservationServiceTest {
         void 예약_불가능한_날짜면_예외() {
             // given
             savedPlace.addUnavailableDate(
-                    List.of(LocalDate.of(2025, 8, 15))
+                    new UnavailableDate(savedPlace, LocalDate.of(2025, 8, 15))
             );
 
             ReservePlaceCommand command = new ReservePlaceCommand(

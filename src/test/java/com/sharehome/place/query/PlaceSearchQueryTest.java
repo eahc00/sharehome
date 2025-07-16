@@ -11,11 +11,11 @@ import com.sharehome.member.domain.Member;
 import com.sharehome.member.domain.MemberRepository;
 import com.sharehome.place.domain.Place;
 import com.sharehome.place.domain.PlaceRepository;
+import com.sharehome.place.domain.UnavailableDate;
 import com.sharehome.place.query.dao.PlaceSearchDao;
 import com.sharehome.place.query.dto.PlaceSearchCondition;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -116,17 +116,9 @@ class PlaceSearchQueryTest {
                 LocalDate.of(2025, 8, 15)
         );
 
-        채리호텔.addUnavailableDate(List.of(
-                LocalDate.of(2025, 8, 16)
-        ));
-
-        인천펜션.addUnavailableDate(List.of(
-                LocalDate.of(2025, 8, 3)
-        ));
-
-        서울게하.addUnavailableDate(List.of(
-                LocalDate.of(2025, 8, 15)
-        ));
+        채리호텔.addUnavailableDate(new UnavailableDate(채리호텔, LocalDate.of(2025, 8, 16)));
+        인천펜션.addUnavailableDate(new UnavailableDate(인천펜션, LocalDate.of(2025, 8, 3)));
+        서울게하.addUnavailableDate(new UnavailableDate(서울게하, LocalDate.of(2025, 8, 15)));
 
         placeRepository.flush();
         // when
@@ -149,13 +141,8 @@ class PlaceSearchQueryTest {
                 LocalDate.of(2025, 8, 14)
         );
 
-        인천펜션.addUnavailableDate(List.of(
-                LocalDate.of(2025, 8, 3)
-        ));
-
-        서울게하.addUnavailableDate(List.of(
-                LocalDate.of(2025, 8, 15)
-        ));
+        인천펜션.addUnavailableDate(new UnavailableDate(인천펜션, LocalDate.of(2025, 8, 3)));
+        서울게하.addUnavailableDate(new UnavailableDate(서울게하, LocalDate.of(2025, 8, 15)));
 
         placeRepository.flush();
         // when
