@@ -58,10 +58,10 @@ class MemberTest {
     void 기존_비밀번호가_같으면_비밀번호_변경() {
         // when
         String newPassword = "newPassword1234@";
-        member.changePassword(member.getPassword(), newPassword);
+        member.changePassword("Password1234@", newPassword);
 
         // then
-        assertThat(member.getPassword()).isEqualTo(newPassword);
+        assertThat(member.getPassword().checkPassword(newPassword)).isTrue();
     }
 
     @Test

@@ -204,7 +204,7 @@ class MemberServiceTest {
 
             // then
             Member member = memberRepository.findById(memberId).get();
-            assertThat(member.getPassword()).isEqualTo(newPassword);
+            assertThat(member.getPassword().checkPassword(newPassword)).isTrue();
         }
 
         @Test
