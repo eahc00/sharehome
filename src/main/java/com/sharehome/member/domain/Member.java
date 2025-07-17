@@ -42,7 +42,7 @@ public class Member {
     private LocalDate birth;
 
     @Column(nullable = false)
-    private String password;
+    private Password password;
 
     private String nickname;
 
@@ -61,11 +61,11 @@ public class Member {
         this.email = email;
         this.name = name;
         this.birth = birth;
-        this.password = password;
+        this.password = Password.hashPassword(password);
     }
 
     public void login(String password) {
-        if (!this.password.equals(password)) {
+        if (!this.password.checkPassword(password)) {
             throw new UnauthorizedException("이메일 혹은 비밀번호가 잘못되어 로그인에 실패하였습니다");
         }
     }
@@ -77,11 +77,11 @@ public class Member {
 
     public void changePassword(String oldPassword, String newPassword) {
         checkPassword(oldPassword);
-        this.password = newPassword;
+        this.password = Password.hashPassword(newPassword);
     }
 
     private void checkPassword(String password) {
-        if (!password.equals(this.password)) {
+        if (!this.password.checkPassword(password)) {
             throw new BadRequestException("비밀번호가 틀립니다");
         }
     }
